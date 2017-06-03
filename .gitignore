@@ -2,7 +2,5 @@
 /CMakeFiles
 !CMakeLists.txt
 *.cmake
+!/exe/test_image
 /exe
-!/exe/*.png
-!/exe/*.jpg
-!/exe/*.bmp
