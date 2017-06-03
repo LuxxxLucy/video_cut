@@ -4,6 +4,9 @@ find_package( OpenCV REQUIRED )
 add_executable( exe/DisplayImage preprocess.cpp )
 target_link_libraries( exe/DisplayImage ${OpenCV_LIBS} )
 
+add_executable( exe/graphcut graphcut_example.cpp )
+target_link_libraries( exe/graphcut ${OpenCV_LIBS} )
+
 # OBJS = preprocess
 #
 # CC	= g++

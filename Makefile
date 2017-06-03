@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named exe/graphcut
+
+# Build rule for target.
+exe/graphcut: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 exe/graphcut
+.PHONY : exe/graphcut
+
+# fast build rule for target.
+exe/graphcut/fast:
+	$(MAKE) -f CMakeFiles/exe/graphcut.dir/build.make CMakeFiles/exe/graphcut.dir/build
+.PHONY : exe/graphcut/fast
+
+#=============================================================================
 # Target rules for targets named exe/DisplayImage
 
 # Build rule for target.
@@ -122,6 +135,33 @@ exe/DisplayImage: cmake_check_build_system
 exe/DisplayImage/fast:
 	$(MAKE) -f CMakeFiles/exe/DisplayImage.dir/build.make CMakeFiles/exe/DisplayImage.dir/build
 .PHONY : exe/DisplayImage/fast
+
+graphcut_example.o: graphcut_example.cpp.o
+
+.PHONY : graphcut_example.o
+
+# target to build an object file
+graphcut_example.cpp.o:
+	$(MAKE) -f CMakeFiles/exe/graphcut.dir/build.make CMakeFiles/exe/graphcut.dir/graphcut_example.cpp.o
+.PHONY : graphcut_example.cpp.o
+
+graphcut_example.i: graphcut_example.cpp.i
+
+.PHONY : graphcut_example.i
+
+# target to preprocess a source file
+graphcut_example.cpp.i:
+	$(MAKE) -f CMakeFiles/exe/graphcut.dir/build.make CMakeFiles/exe/graphcut.dir/graphcut_example.cpp.i
+.PHONY : graphcut_example.cpp.i
+
+graphcut_example.s: graphcut_example.cpp.s
+
+.PHONY : graphcut_example.s
+
+# target to generate assembly for a file
+graphcut_example.cpp.s:
+	$(MAKE) -f CMakeFiles/exe/graphcut.dir/build.make CMakeFiles/exe/graphcut.dir/graphcut_example.cpp.s
+.PHONY : graphcut_example.cpp.s
 
 preprocess.o: preprocess.cpp.o
 
@@ -158,7 +198,11 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... exe/graphcut"
 	@echo "... exe/DisplayImage"
+	@echo "... graphcut_example.o"
+	@echo "... graphcut_example.i"
+	@echo "... graphcut_example.s"
 	@echo "... preprocess.o"
 	@echo "... preprocess.i"
 	@echo "... preprocess.s"
