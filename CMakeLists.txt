@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project( DisplayImage )
 find_package( OpenCV REQUIRED )
-add_executable( exe/DisplayImage preprocess.cpp )
+add_executable( exe/DisplayImage readImage.cpp )
 target_link_libraries( exe/DisplayImage ${OpenCV_LIBS} )
 
 add_executable( exe/graphcut graphcut_example.cpp )
