@@ -7,10 +7,12 @@
 #include <QFileInfo>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 #include <string>
 #include <dirent.h>
 #include <boost/algorithm/string.hpp>
+#include <opencv2/legacy/legacy.hpp>
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -199,9 +201,40 @@ void VideoCut::ShowColor()
 	}
 }
 
-void optimize_3_frame(int i,std::vector<cv::Mat> images,std::vector<cv::Mat> &labels)
+void optimize_3_frame(int k,std::vector<cv::Mat> images,std::vector<cv::Mat> &labels)
 {
-	labels[i+1]=labels[i].clone();
+	labels[k+1]=labels[k];
+	cv::Mat temp_label=labels[k+1].clone();
+	int row = temp_label.rows;
+	int col = temp_label.cols;
+	int max_value=0;
+	//用膨胀的方法，将上一张的foreground进行膨胀
+	for(int i=0 ; i<row ; i++){
+		for(int j=0 ; j<col ; j++){
+			max_value=0;
+			for(int x=0 ; x<11&&x+i<row ; x++){
+				for(int y=0 ; y<11&&y+j<col ; y++){
+					max_value=(max_value<labels[k+1].at<uchar>(i+x,j+y) ? labels[k+1].at<uchar>(i+x,j+y):max_value);
+				}
+			}
+			temp_label.at<uchar>(i,j)=(max_value==0 ? 0 : 3);
+		}
+	}
+	labels[k+1]=temp_label.clone();
+	cv::Rect rect(0,0,images[k+1].cols-1,images[k+1].rows-1);
+	cv::Mat image_copy = images[k+1].clone();
+	cv::Mat bgdModel,fgdModel;
+	cv::grabCut(image_copy,labels[k+1],rect,bgdModel,fgdModel,2,1);
+	for(int i=0;i<row;i++){
+		for(int j=0;j<col ;j++){
+			cv::Vec3b temp_color = image_copy.at<cv::Vec3b>(i,j);
+			if(temp_color==cv::Vec3b(0,0,0)){
+				labels[k+1].at<uchar>(i,j)=0;
+			}else{
+				labels[k+1].at<uchar>(i,j)=1;
+			}
+		}
+	}
 	return;
 }
 
@@ -291,7 +324,7 @@ std::vector<int> read_keyframes(std::string dirname,std::vector<cv::Mat>& labels
 
 void merge_and_save(std::vector<cv::Mat> images,std::vector<cv::Mat> labels)
 {
-	std::cout << images[0].type() << '\n';
+	std::cout << (images[0].type()==CV_32FC3?0:1) << 	'\n';
 	std::cout << labels[0].type() << '\n';
 	std::cout << "now start saving!"  << '\n';
 	for (int s=0;s<labels.size();s++)
@@ -300,9 +333,9 @@ void merge_and_save(std::vector<cv::Mat> images,std::vector<cv::Mat> labels)
 		{
     		for(int j = 0; j < images[s].cols; j++)
 			{
-        		if(labels[s].at<int>(i,j)>=1)
+        		if(labels[s].at<uchar>(i,j)>=13)
 				{
-					images[s].at<cv::Vec3b>(i,j)[0]=255;
+					images[s].at<cv::Vec3b>(i,j)[0]=0;
 					images[s].at<cv::Vec3b>(i,j)[1]=0;
 					images[s].at<cv::Vec3b>(i,j)[2]=0;
 					// images[s].at<int>(i,j,0)=0;
@@ -311,7 +344,7 @@ void merge_and_save(std::vector<cv::Mat> images,std::vector<cv::Mat> labels)
 				}
 			}
 		}
-		imwrite( "data/source/backVideo/"+std::to_string(s)+".png", labels[s]);
+		imwrite( "data/source/backVideo/"+std::to_string(s)+".png", images[s]);
 	}
 
 }
@@ -337,10 +370,54 @@ void VideoCut::doVideoCut() {
 	{
 		labels.push_back( cv::Mat::zeros(images[0].rows,images[0].cols,CV_8UC1));
 	}
+	//对于temp_labels进行改变
+	for(int i=0;i<temp_labels.size();i++)
+	{
+		cv::Mat change_labels=cv::Mat::zeros(temp_labels[0].rows,temp_labels[0].cols,CV_8UC1);
+		for(int x=0;x<temp_labels[i].rows;x++)
+		{
+			bool booll=false;
+			int flag=2;
+			for(int y=0;y<temp_labels[i].cols;y++)
+			{
+				change_labels.at<uchar>(x,y)=flag;
+				// std::cout<<temp_labels[i].at<uchar>(x,y)<<"\n";
+				if(temp_labels[i].at<uchar>(x,y)>0)
+				{
+					if(!booll){
+						booll=true;
+					}
+					else
+					{
+						booll=false;
+					}
+				}
+				if(booll)
+					flag=3;
+				else
+					flag=2;
+			}
+		}
+		temp_labels[i]=change_labels.clone();
+	}
+	cv::Mat bgdModel,fgdModel;
 	for(int i=0;i<keyframe_indexs.size();i++)
 	{
 		std::cout << keyframe_indexs[i] << '\n';
 		labels[keyframe_indexs[i]]=temp_labels[i].clone();
+		cv::Rect rect(0,0,images[i+1].cols,images[i+1].rows);
+		cv::Mat image_copy = images[keyframe_indexs[i]].clone();
+		cv::grabCut(image_copy,labels[keyframe_indexs[i]],rect,bgdModel,fgdModel,2,cv::GC_INIT_WITH_MASK);
+		for(int j=0;j<image_copy.rows;j++){
+			for(int k=0;k<image_copy.cols ;k++){
+				cv::Vec3b temp_color = image_copy.at<cv::Vec3b>(j,k);
+				if(temp_color==cv::Vec3b(0,0,0)){
+					labels[keyframe_indexs[i]].at<uchar>(j,k)=0;
+				}else{
+					labels[keyframe_indexs[i]].at<uchar>(j,k)=1;
+				}
+			}
+		}
 	}
 
 	std::cout<< " label initial okay " <<std::endl;
@@ -349,7 +426,7 @@ void VideoCut::doVideoCut() {
 	{
 		int start_index=keyframe_indexs[i],end_index=keyframe_indexs[i+1];
 		int interval=end_index-start_index;
-		#define MAX_ITERATION_NUM 10
+		#define MAX_ITERATION_NUM 1
 		for(int iter=0;iter<MAX_ITERATION_NUM;iter++)
 		{
 			for(int i=0;i<interval-1;i++)
