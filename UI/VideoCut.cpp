@@ -6,9 +6,7 @@
 #include <QColorDialog>
 #include <QFileInfo>
 #include <opencv2/core/core.hpp>
-#include <opencv2/legacy/legacy.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 #include <string>
 #include <dirent.h>
@@ -201,92 +199,59 @@ void VideoCut::ShowColor()
 	}
 }
 
-void optimize_3_frame(int i,std::vector<cv::Mat> images,std::vector<cv::Mat> labels)
+void optimize_3_frame(int i,std::vector<cv::Mat> images,std::vector<cv::Mat> &labels)
 {
-	labels[i+1]=labels[i];
+	labels[i+1]=labels[i].clone();
 	return;
 }
 
 std::vector<cv::Mat> read_video2Mat(std::string video_path)
 {
+	std::vector<cv::Mat> images_temp;
 	std::vector<cv::Mat> images;
+	std::string cmd="ffmpeg -i "+video_path+" -q:v 2  data/source/Video/%d.png";
+	// system(cmd.c_str());
 
-	std::cout<<"reading!"<<std::endl;
+	std::string path = "data/source/Video/";
+	std::vector<int> index;
 
-	//打开视频文件：其实就是建立一个VideoCapture结构
-    cv::VideoCapture capture(video_path);
+	//load image
+	DIR *dp;
+	struct dirent *dirp;
+	if((dp=opendir(path.c_str()))==NULL){
+		perror("opendir error");
+		free(dp);
+		exit(1);
+	}
+	while((dirp=readdir(dp))!=NULL){
+		if((strcmp(dirp->d_name,".")==0)||(strcmp(dirp->d_name,"..")==0))
+			continue;
+		std::string fname = path+dirp->d_name;
+		std::vector<std::string> fields;
+		boost::split( fields, dirp->d_name, boost::is_any_of( "." ) );
+		int i=(int)std::atof(fields[0].c_str() );
+		index.push_back(i);
+		cv::Mat img = cv::imread(fname,CV_LOAD_IMAGE_COLOR);
+		if (img.empty()) {
+			continue;
+		}
+		images_temp.push_back(img.clone());
+	}
+	closedir(dp);
 
-	std::cout<<"reading!"<<std::endl;
-    //检测是否正常打开:成功打开时，isOpened返回ture
-    if(!capture.isOpened())
-        std::cout<<"fail to open!"<<std::endl;
+	std::cout<<" video decoding okay! frame number "<<images_temp.size()<<index.size()<<std::endl;
 
-	std::cout<<"reading!"<<std::endl;
-    int totalFrameNumber = capture.get(CV_CAP_PROP_FRAME_COUNT);
-	std::cout<<"reading!"<<std::endl;
+	images.resize(images_temp.size());
+	for(int i =0;i<index.size();i++)
+	{
+		images[index[i]-1] = images_temp[i].clone();
+	}
 
+	return images;
 
-    int frameToStart = 0;
-    capture.set( CV_CAP_PROP_POS_FRAMES,frameToStart);
-    std::cout<<" total "<<totalFrameNumber<< " start from "<< frameToStart <<std::endl;
-
-    int frameToStop = totalFrameNumber;
-
-    if(frameToStop < frameToStart)
-    {
-        std::cout<<" end frame number smaller than start"<<std::endl;
-        return images;
-    }
-    else
-    {
-        std::cout<<"end frame as "<<frameToStop<<std::endl;
-    }
-    //获取帧率
-    double rate = capture.get(CV_CAP_PROP_FPS);
-    std::cout<<"frame rate"<<rate<<std::endl;
-
-    //定义一个用来控制读取视频循环结束的变量
-    bool stop = false;
-    //承载每一帧的图像
-    cv::Mat frame;
-    //显示每一帧的窗口
-    //两帧间的间隔时间:
-    //int delay = 1000/rate;
-    int delay = 1000/rate;
-
-    //利用while循环读取帧
-    //currentFrame是在循环体中控制读取到指定的帧后循环结束的变量
-    long currentFrame = frameToStart;
-
-    //滤波器的核
-    int kernel_size = 3;
-    cv::Mat kernel = cv::Mat::ones(kernel_size,kernel_size,CV_32F)/(float)(kernel_size*kernel_size);
-
-    while(!stop)
-    {
-        //读取下一帧
-        if(!capture.read(frame))
-        {
-            std::cout<<"read video failed"<<std::endl;
-            return images;
-        }
-
-        //这里加滤波程序
-        filter2D(frame,frame,-1,kernel);
-		std::cout<<frame.channels()<<std::cout;
-		images.push_back(frame.clone());
-
-        currentFrame++;
-		if(currentFrame>=frameToStop)
-			stop=true;
-
-    }
-    //关闭视频文件
-    capture.release();
-    return images;
 }
 
-std::vector<int> read_keyframes(std::string dirname,std::vector<cv::Mat> labels)
+std::vector<int> read_keyframes(std::string dirname,std::vector<cv::Mat>& labels)
 {
 	std::string path = dirname + "/";
 	std::vector<int> index;
@@ -307,56 +272,78 @@ std::vector<int> read_keyframes(std::string dirname,std::vector<cv::Mat> labels)
 		std::string fname = path+dirp->d_name;
 		std::vector<std::string> fields;
 
-		boost::split( fields, fname, boost::is_any_of( "." ) );
+		boost::split( fields, dirp->d_name, boost::is_any_of( "." ) );
 		index.push_back( (int)std::atof(fields[0].c_str() ) );
 		cv::Mat img = cv::imread(fname,CV_LOAD_IMAGE_GRAYSCALE);
+		std::cout << img.channels() << '\n';
+
 		if (img.empty()) {
 			continue;
 		}
-		labels.push_back(img);
+		labels.push_back(img.clone());
 	}
 	closedir(dp);
+
+	std::cout << "total key frame number" << labels.size()<< '\n';
 
 	return index;
 }
 
 void merge_and_save(std::vector<cv::Mat> images,std::vector<cv::Mat> labels)
 {
-	for (int s=0;s<=labels.size();s++)
+	std::cout << images[0].type() << '\n';
+	std::cout << labels[0].type() << '\n';
+	std::cout << "now start saving!"  << '\n';
+	for (int s=0;s<labels.size();s++)
 	{
-		for(int i = 0; i < labels[s].rows; i++)
-    		for(int j = 0; j < labels[s].cols; j++)
+		for(int i = 0; i < images[s].rows; i++)
+		{
+    		for(int j = 0; j < images[s].cols; j++)
 			{
-        		if(labels[s].at<double>(i,j)!=0)
+        		if(labels[s].at<int>(i,j)>=1)
 				{
-					images[s].at<double>(i,j,0)=0;
-					images[s].at<double>(i,j,1)=0;
-					images[s].at<double>(i,j,2)=0;
-					images[s].at<double>(i,j,3)=0;
+					images[s].at<cv::Vec3b>(i,j)[0]=255;
+					images[s].at<cv::Vec3b>(i,j)[1]=0;
+					images[s].at<cv::Vec3b>(i,j)[2]=0;
+					// images[s].at<int>(i,j,0)=0;
+					// images[s].at<int>(i,j,1)=0;
+					// images[s].at<int>(i,j,2)=0;
 				}
-
 			}
-
+		}
+		imwrite( "data/source/backVideo/"+std::to_string(s)+".png", labels[s]);
 	}
+
 }
 
 void VideoCut::doVideoCut() {
 	//Դ��Ƶ���ļ����� this->fileFull��ȡ  ����ͼ�ļ�����this->centerWidget->getSavePath()��ȡ Ŀ���ļ����û�û��ָ�������ͷ��ڰ���֮ǰ�����Ʒ���data��������ĳ��Ŀ¼�����ɣ����Լ���
 
-	std::string video_path="../data/news.avi";
-	std::cout<< " video path is "<< video_path <<std::endl;
-	std::string keyframes_path="../data/source/keyframe/news.avi";
+	std::string video_path="./data/news.avi";
+	std::string keyframes_path="./data/source/keyframe/news.avi";
 	// read cut of keyframes
-	std::vector<cv::Mat> labels;
-	std::vector<cv::Mat> images=read_video2Mat(video_path);
+	std::vector<cv::Mat> labels,temp_labels;
 	std::cout<< " key frames path is "<< keyframes_path <<std::endl;
-	std::vector<int> keyframe_indexs=read_keyframes(keyframes_path,labels);
+	std::vector<int> keyframe_indexs=read_keyframes(keyframes_path,temp_labels);
+	std::cout<< " preprocessing okay,labelled frames "<< temp_labels.size() <<std::endl;
 
+	std::cout<< " video path is "<< video_path <<std::endl;
+	std::vector<cv::Mat> images=read_video2Mat(video_path);
+	std::cout<< " preprocessing okay,total frames "<< images.size() <<std::endl;
+
+	std::cout << temp_labels[0].channels() << '\n';
 	// assign labels fo keyframes
+	for(int i=0;i<images.size();i++)
+	{
+		labels.push_back( cv::Mat::zeros(images[0].rows,images[0].cols,CV_8UC1));
+	}
 	for(int i=0;i<keyframe_indexs.size();i++)
 	{
-		// assign values to labels
+		std::cout << keyframe_indexs[i] << '\n';
+		labels[keyframe_indexs[i]]=temp_labels[i].clone();
 	}
+
+	std::cout<< " label initial okay " <<std::endl;
 
 	for(int i=0;i<keyframe_indexs.size()-1;i++)
 	{
@@ -365,7 +352,7 @@ void VideoCut::doVideoCut() {
 		#define MAX_ITERATION_NUM 10
 		for(int iter=0;iter<MAX_ITERATION_NUM;iter++)
 		{
-			for(int i=0;i<interval;i++)
+			for(int i=0;i<interval-1;i++)
 			{
 				optimize_3_frame(i+start_index,images,labels);
 			}
@@ -373,6 +360,7 @@ void VideoCut::doVideoCut() {
 	}
 
 	// read all frames
+	std::cout << "cut okay!" << '\n';
 	merge_and_save(images,labels);
 }
 void VideoCut::doVideoPaste() {

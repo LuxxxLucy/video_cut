@@ -35,13 +35,16 @@ set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 # Include folders
 include_directories(${PROJECT_SOURCE_DIR})
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/include )
+# include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/include )
 
 include_directories(${CMAKE_BINARY_DIR})
-link_directories( ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/lib )
+# link_directories( ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/lib )
 
 add_executable( DisplayImage readImage.cpp )
 target_link_libraries( DisplayImage ${OpenCV_LIBS} )
+
+add_executable( video_read video_read_test.cpp )
+target_link_libraries( video_read ${OpenCV_LIBS} )
 
 add_executable( graphcut graphcut_example.cpp )
 target_link_libraries( graphcut ${OpenCV_LIBS} )

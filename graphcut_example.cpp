@@ -14,6 +14,7 @@ int main( int argc, char** argv )
 
     cv::Mat image;
     image = cv::imread(argv[1], CV_LOAD_IMAGE_COLOR);   // Read the file with colors (3 channels)
+    
 
     if(! image.data )                              // Check for invalid input
     {
