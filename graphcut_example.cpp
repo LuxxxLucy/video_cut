@@ -58,9 +58,9 @@ int main( int argc, char** argv )
     // draw rectangle on original image
     cv::rectangle(image, rectangle, cv::Scalar(255,255,255),1);
 
-    imwrite("illustraion.jpg",image);
-    imwrite("Foreground.jpg",foreground);
+    imwrite("exe/illustraion.jpg",image);
+    imwrite("exe/Foreground.jpg",foreground);
     // cv::Mat background = image2 - foreground;
-    imwrite("Background.jpg",background);
+    imwrite("exe/Background.jpg",background);
     return 0;
 }

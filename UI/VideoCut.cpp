@@ -5,6 +5,13 @@
 #include <QByteArray>
 #include <QColorDialog>
 #include <QFileInfo>
+#include <opencv2/core/core.hpp>
+#include <opencv2/legacy/legacy.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <iostream>
+#include <string>
+#include <dirent.h>
+#include <boost/algorithm/string.hpp>
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -26,66 +33,66 @@ VideoCut::~VideoCut() {
 }
 void VideoCut::createActions()
 {
-	//"µ¼ÈëÔ´ÎÄ¼ş"¶¯×÷
-	openVideoFileAction = new QAction(QIcon("Resources/open_orivideo.png"), tr("µ¼ÈëÔ´ÊÓÆµ"), this);
+	//"ï¿½ï¿½ï¿½ï¿½Ô´ï¿½Ä¼ï¿½"ï¿½ï¿½ï¿½ï¿½
+	openVideoFileAction = new QAction(QIcon("Resources/open_orivideo.png"), tr("ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½Æµ"), this);
 	openVideoFileAction->setShortcut(tr("Ctrl+O"));
-	openVideoFileAction->setStatusTip(tr("µ¼ÈëÔ´ÊÓÆµ"));
+	openVideoFileAction->setStatusTip(tr("ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½Æµ"));
 	connect(openVideoFileAction, SIGNAL(triggered()), this, SLOT(ShowOriginalVideoFile()));
 
-	//"µ¼ÈëÒÑÓĞ¹Ø¼üÖ¡"¶¯×÷
-	openBitMapAction = new QAction(QIcon("Resources/open_bitmap.png"), tr("µ¼ÈëÒÑÓĞ¹Ø¼üÖ¡"), this);
+	//"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¹Ø¼ï¿½Ö¡"ï¿½ï¿½ï¿½ï¿½
+	openBitMapAction = new QAction(QIcon("Resources/open_bitmap.png"), tr("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¹Ø¼ï¿½Ö¡"), this);
 	openBitMapAction->setShortcut(tr("Ctrl+M"));
-	openBitMapAction->setStatusTip(tr("µ¼ÈëÒÑÓĞ¹Ø¼üÖ¡"));
+	openBitMapAction->setStatusTip(tr("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¹Ø¼ï¿½Ö¡"));
 	connect(openBitMapAction, SIGNAL(triggered()), this, SLOT(ShowBitMap()));
 
-	//"±£´æ¹Ø¼üÖ¡"¶¯×÷
-	SaveBitMapAction = new QAction(QIcon("Resources/save_bitmap.png"), tr("±£´æ¹Ø¼üÖ¡"), this);
+	//"ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½Ö¡"ï¿½ï¿½ï¿½ï¿½
+	SaveBitMapAction = new QAction(QIcon("Resources/save_bitmap.png"), tr("ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½Ö¡"), this);
 	SaveBitMapAction->setShortcut(tr("Ctrl+S"));
-	SaveBitMapAction->setStatusTip(tr("±£´æ¹Ø¼üÖ¡"));
+	SaveBitMapAction->setStatusTip(tr("ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½Ö¡"));
 	connect(SaveBitMapAction, SIGNAL(triggered()), this, SLOT(SaveBitMap()));
 
-	//"µ¼Èë½ØÈ¡½á¹û"¶¯×÷
-	openCutVideoFileAction = new QAction(QIcon("Resources/open_cut_video.png"), tr("µ¼Èë½ØÈ¡½á¹û"), this);
+	//"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½"ï¿½ï¿½ï¿½ï¿½
+	openCutVideoFileAction = new QAction(QIcon("Resources/open_cut_video.png"), tr("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½"), this);
 	openCutVideoFileAction->setShortcut(tr("Ctrl+W"));
-	openCutVideoFileAction->setStatusTip(tr("µ¼Èë½ØÈ¡½á¹û"));
+	openCutVideoFileAction->setStatusTip(tr("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½"));
 	connect(openCutVideoFileAction, SIGNAL(triggered()), this, SLOT(ShowVideoCutFile()));
 
-	//"µ¼Èë±³¾°ÊÓÆµ"¶¯×÷
-	openBgVideoFileAction = new QAction(QIcon("Resources/open_bg_video.png"), tr("µ¼Èë±³¾°ÊÓÆµ"), this);
+	//"ï¿½ï¿½ï¿½ë±³ï¿½ï¿½ï¿½ï¿½Æµ"ï¿½ï¿½ï¿½ï¿½
+	openBgVideoFileAction = new QAction(QIcon("Resources/open_bg_video.png"), tr("ï¿½ï¿½ï¿½ë±³ï¿½ï¿½ï¿½ï¿½Æµ"), this);
 	openBgVideoFileAction->setShortcut(tr("Ctrl+B"));
-	openBgVideoFileAction->setStatusTip(tr("µ¼Èë±³¾°ÊÓÆµ"));
+	openBgVideoFileAction->setStatusTip(tr("ï¿½ï¿½ï¿½ë±³ï¿½ï¿½ï¿½ï¿½Æµ"));
 	connect(openBgVideoFileAction, SIGNAL(triggered()), this, SLOT(ShowBgVideoFile()));
 
-	//"videocut"¶¯×÷
-	videoCutOutAction = new QAction(QIcon("Resources/cut.png"), tr("ÌáÈ¡ÊÓÆµ¶ÔÏó"), this);
+	//"videocut"ï¿½ï¿½ï¿½ï¿½
+	videoCutOutAction = new QAction(QIcon("Resources/cut.png"), tr("ï¿½ï¿½È¡ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½"), this);
 	videoCutOutAction->setShortcut(tr("Ctrl+X"));
-	videoCutOutAction->setStatusTip(tr("ÌáÈ¡ÊÓÆµ¶ÔÏó"));
+	videoCutOutAction->setStatusTip(tr("ï¿½ï¿½È¡ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½"));
 	connect(videoCutOutAction, SIGNAL(triggered()), this, SLOT(doVideoCut()));
 
-	//"videopaste"¶¯×÷
-	videoPasteAction = new QAction(QIcon("Resources/paste.png"), tr("Õ³Ìùµ½Ä¿±êÊÓÆµ"), this);
+	//"videopaste"ï¿½ï¿½ï¿½ï¿½
+	videoPasteAction = new QAction(QIcon("Resources/paste.png"), tr("Õ³ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Æµ"), this);
 	videoPasteAction->setShortcut(tr("Ctrl+V"));
-	videoPasteAction->setStatusTip(tr("Õ³Ìùµ½Ä¿±êÊÓÆµ"));
+	videoPasteAction->setStatusTip(tr("Õ³ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Æµ"));
 	connect(videoPasteAction, SIGNAL(triggered()), this, SLOT(doVideoPaste()));
 
-	//"ÍË³ö"¶¯×÷
-	exitAction = new QAction(QIcon("Resources/exit.png"),tr("ÍË³ö"), this);
+	//"ï¿½Ë³ï¿½"ï¿½ï¿½ï¿½ï¿½
+	exitAction = new QAction(QIcon("Resources/exit.png"),tr("ï¿½Ë³ï¿½"), this);
 	exitAction->setShortcut(tr("Ctrl+Q"));
-	exitAction->setStatusTip(tr("ÍË³ö³ÌĞò"));
+	exitAction->setStatusTip(tr("ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½"));
 	connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
-	//ÊµÏÖ³·ÏúºÍÖØ×öµÄ¶¯×÷£¨Action£©
-	//³·ÏúºÍÖØ×ö
-	undoAction = new QAction(QIcon("Resources/undo.png"), "³·Ïú", this);
+	//Êµï¿½Ö³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½Actionï¿½ï¿½
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	undoAction = new QAction(QIcon("Resources/undo.png"), "ï¿½ï¿½ï¿½ï¿½", this);
 	//connect(undoAction, SIGNAL(triggered()), showWidget->text, SLOT(undo()));
-	redoAction = new QAction(QIcon("Resources/redo.png"), "ÖØ×ö", this);
+	redoAction = new QAction(QIcon("Resources/redo.png"), "ï¿½ï¿½ï¿½ï¿½", this);
 	//connect(redoAction, SIGNAL(triggered()), showWidget->text, SLOT(redo()));
 }
 
 void VideoCut::createMenus()
 {
-	//ÎÄ¼ş²Ëµ¥
-	fileMenu = menuBar()->addMenu(tr("ÎÄ¼ş"));
+	//ï¿½Ä¼ï¿½ï¿½Ëµï¿½
+	fileMenu = menuBar()->addMenu(tr("ï¿½Ä¼ï¿½"));
 	fileMenu->addAction(openVideoFileAction);
 	fileMenu->addAction(openBitMapAction);
 	fileMenu->addAction(SaveBitMapAction);
@@ -94,11 +101,11 @@ void VideoCut::createMenus()
 	fileMenu->addSeparator();
 	fileMenu->addAction(exitAction);
 
-	editMenu = menuBar()->addMenu(tr("±à¼­"));
+	editMenu = menuBar()->addMenu(tr("ï¿½à¼­"));
 	editMenu->addAction(undoAction);
 	editMenu->addAction(redoAction);
 
-	execMenu = menuBar()->addMenu(tr("ÔËĞĞ"));
+	execMenu = menuBar()->addMenu(tr("ï¿½ï¿½ï¿½ï¿½"));
 	execMenu->addAction(videoCutOutAction);
 	execMenu->addAction(videoPasteAction);
 
@@ -106,7 +113,7 @@ void VideoCut::createMenus()
 
 void VideoCut::createToolBars()
 {
-	//ÎÄ¼ş¹¤¾ßÌõ
+	//ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	fileTool = addToolBar("File");
 	fileTool->addAction(openVideoFileAction);
 	fileTool->addAction(openBitMapAction);
@@ -114,7 +121,7 @@ void VideoCut::createToolBars()
 	fileTool->addAction(openCutVideoFileAction);
 	fileTool->addAction(openBgVideoFileAction);
 
-	//³·ÏúºÍÖØ×ö¹¤¾ßÌõ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	doToolBar = addToolBar("doEdit");
 	doToolBar->addAction(undoAction);
 	doToolBar->addAction(redoAction);
@@ -124,19 +131,19 @@ void VideoCut::createToolBars()
 	execToolBar->addAction(videoPasteAction);
 
 	paintToolBar = addToolBar("paint");
-	widthLabel = new QLabel(tr("Ïß¿í£º"));    		//´´½¨Ïß¿íÑ¡Ôñ¿Ø¼ş
+	widthLabel = new QLabel(tr("ï¿½ß¿ï¿½ï¿½ï¿½"));    		//ï¿½ï¿½ï¿½ï¿½ï¿½ß¿ï¿½Ñ¡ï¿½ï¿½ï¿½Ø¼ï¿½
 	widthSpinBox = new QSpinBox;
 	widthSpinBox->setValue(2);
 	connect(widthSpinBox, SIGNAL(valueChanged(int)), centerWidget, SLOT(setWidth(int)));
 
-	colorBtn = new QToolButton;                  //´´½¨ÑÕÉ«Ñ¡Ôñ¿Ø¼ş
+	colorBtn = new QToolButton;                  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«Ñ¡ï¿½ï¿½ï¿½Ø¼ï¿½
 	QPixmap pixmap(20, 20);
 	pixmap.fill(Qt::blue);
 	colorBtn->setIcon(QIcon(pixmap));
 	connect(colorBtn, SIGNAL(clicked()), this, SLOT(ShowColor()));
 
-	clearBtn = new QToolButton();               	//´´½¨Çå³ı°´Å¥
-	clearBtn->setText(tr("Çå³ı"));
+	clearBtn = new QToolButton();               	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¥
+	clearBtn->setText(tr("ï¿½ï¿½ï¿½ï¿½"));
 	connect(clearBtn, SIGNAL(clicked()), centerWidget, SLOT(clear()));
 
 	paintToolBar->addWidget(widthLabel);
@@ -147,7 +154,7 @@ void VideoCut::createToolBars()
 
 void VideoCut::ShowOriginalVideoFile()
 {
-	fileFull = QFileDialog::getOpenFileName(this, "µ¼ÈëÔ´ÊÓÆµ", "/", "Video files(*.avi;*.mp4;*.mkv;*.rmvb;*.mov;*.wmv)");
+	fileFull = QFileDialog::getOpenFileName(this, "ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½Æµ", "/", "Video files(*.avi;*.mp4;*.mkv;*.rmvb;*.mov;*.wmv)");
 	QFileInfo finfo = QFileInfo(fileFull);
 	fileName = finfo.fileName();
 	filePath = finfo.absolutePath();
@@ -161,7 +168,7 @@ void VideoCut::ShowOriginalVideoFile()
 	}
 }
 void VideoCut::ShowBitMap() {
-	QFileDialog* fd = new QFileDialog(this, "Ñ¡Ôñ¹Ø¼üÖ¡ÎÄ¼ş¼Ğ", "file");
+	QFileDialog* fd = new QFileDialog(this, "Ñ¡ï¿½ï¿½ï¿½Ø¼ï¿½Ö¡ï¿½Ä¼ï¿½ï¿½ï¿½", "file");
 	fd->setFileMode(QFileDialog::Directory);
 	if (fd->exec() == QDialog::Accepted)
 	{
@@ -183,7 +190,7 @@ void VideoCut::ShowBgVideoFile() {
 
 void VideoCut::ShowColor()
 {
-	QColor color = QColorDialog::getColor(static_cast<int>(Qt::blue), this);	//Ê¹ÓÃ±ê×¼ÑÕÉ«¶Ô»°¿òQColorDialog»ñµÃÒ»¸öÑÕÉ«Öµ
+	QColor color = QColorDialog::getColor(static_cast<int>(Qt::blue), this);	//Ê¹ï¿½Ã±ï¿½×¼ï¿½ï¿½É«ï¿½Ô»ï¿½ï¿½ï¿½QColorDialogï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½É«Öµ
 	if (color.isValid())
 	{
 		centerWidget->setColor(color);
@@ -193,9 +200,153 @@ void VideoCut::ShowColor()
 	}
 }
 
+void optimize_3_frame(int i,std::vector<cv::Mat> images,std::vector<cv::Mat> labels)
+{
+	labels[i+1]=labels[i];
+	return;
+}
+
+std::vector<cv::Mat> read_video2Mat(std::string video_path)
+{
+	std::vector<cv::Mat> images;
+
+	//æ‰“å¼€è§†é¢‘æ–‡ä»¶ï¼šå…¶å®å°±æ˜¯å»ºç«‹ä¸€ä¸ªVideoCaptureç»“æ„
+    cv::VideoCapture capture(video_path);
+    //æ£€æµ‹æ˜¯å¦æ­£å¸¸æ‰“å¼€:æˆåŠŸæ‰“å¼€æ—¶ï¼ŒisOpenedè¿”å›ture
+    if(!capture.isOpened())
+        std::cout<<"fail to open!"<<std::endl;
+    long totalFrameNumber = capture.get(CV_CAP_PROP_FRAME_COUNT);
+
+    long frameToStart = 0;
+    capture.set( CV_CAP_PROP_POS_FRAMES,frameToStart);
+    std::cout<<" total "<<totalFrameNumber<< " start from "<< frameToStart <<std::endl;
+
+    int frameToStop = totalFrameNumber;
+
+    if(frameToStop < frameToStart)
+    {
+        std::cout<<" end frame number smaller than start"<<std::endl;
+        return images;
+    }
+    else
+    {
+        std::cout<<"end frame as "<<frameToStop<<std::endl;
+    }
+    //è·å–å¸§ç‡
+    double rate = capture.get(CV_CAP_PROP_FPS);
+    std::cout<<"frame rate"<<rate<<std::endl;
+
+    //å®šä¹‰ä¸€ä¸ªç”¨æ¥æ§åˆ¶è¯»å–è§†é¢‘å¾ªç¯ç»“æŸçš„å˜é‡
+    bool stop = false;
+    //æ‰¿è½½æ¯ä¸€å¸§çš„å›¾åƒ
+    cv::Mat frame;
+    //æ˜¾ç¤ºæ¯ä¸€å¸§çš„çª—å£
+    //ä¸¤å¸§é—´çš„é—´éš”æ—¶é—´:
+    //int delay = 1000/rate;
+    int delay = 1000/rate;
+
+    //åˆ©ç”¨whileå¾ªç¯è¯»å–å¸§
+    //currentFrameæ˜¯åœ¨å¾ªç¯ä½“ä¸­æ§åˆ¶è¯»å–åˆ°æŒ‡å®šçš„å¸§åå¾ªç¯ç»“æŸçš„å˜é‡
+    long currentFrame = frameToStart;
+
+
+    //æ»¤æ³¢å™¨çš„æ ¸
+    int kernel_size = 3;
+    cv::Mat kernel = cv::Mat::ones(kernel_size,kernel_size,CV_32F)/(float)(kernel_size*kernel_size);
+
+    while(!stop)
+    {
+        //è¯»å–ä¸‹ä¸€å¸§
+        if(!capture.read(frame))
+        {
+            std::cout<<"read video failed"<<std::endl;
+            return images;
+        }
+
+        //è¿™é‡ŒåŠ æ»¤æ³¢ç¨‹åº
+        filter2D(frame,frame,-1,kernel);
+		images.push_back(frame.clone());
+
+        currentFrame++;
+
+    }
+    //å…³é—­è§†é¢‘æ–‡ä»¶
+    capture.release();
+    return images;
+}
+
+std::vector<int> read_keyframes(std::string dirname,std::vector<cv::Mat> labels)
+{
+	std::string path = dirname + "/";
+	std::vector<int> index;
+
+	//load image
+	DIR *dp;
+	struct dirent *dirp;
+	if((dp=opendir(path.c_str()))==NULL){
+		perror("opendir error");
+		free(dp);
+		exit(1);
+	}
+
+
+	while((dirp=readdir(dp))!=NULL){
+		if((strcmp(dirp->d_name,".")==0)||(strcmp(dirp->d_name,"..")==0))
+			continue;
+		std::string fname = path+dirp->d_name;
+		std::vector<std::string> fields;
+
+		boost::split( fields, fname, boost::is_any_of( "." ) );
+		index.push_back( (int)std::atof(fields[0].c_str() ) );
+		cv::Mat img = cv::imread(fname,CV_LOAD_IMAGE_GRAYSCALE);
+		if (img.empty()) {
+			continue;
+		}
+		labels.push_back(img);
+	}
+	closedir(dp);
+
+	return index;
+}
+
 void VideoCut::doVideoCut() {
-	//Ô´ÊÓÆµµÄÎÄ¼şÃûÓÃ this->fileFull»ñÈ¡  ÂÖÀªÍ¼ÎÄ¼ş¼ĞÓÃthis->centerWidget->getSavePath()»ñÈ¡ Ä¿±êÎÄ¼ş¼ĞÓÃ»§Ã»ÓĞÖ¸¶¨£¬Äã¾Í·ÅÔÚ°´ÕÕÖ®Ç°µÄÉè¼Æ·ÅÔÚdataÄÇÀïÃæµÄÄ³¸öÄ¿Â¼ÏÂÃæ°É£¬Äã×Ô¼º¶¨
+	//Ô´ï¿½ï¿½Æµï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ this->fileFullï¿½ï¿½È¡  ï¿½ï¿½ï¿½ï¿½Í¼ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½this->centerWidget->getSavePath()ï¿½ï¿½È¡ Ä¿ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ã»ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½Ú°ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½dataï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Ä¿Â¼ï¿½ï¿½ï¿½ï¿½ï¿½É£ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½
+
+	std::string video_path="./data/news.avi";
+	std::cout<< " video path is "<< video_path <<std::endl;
+	std::string keyframes_path="./data/source/keyframe/news.avi";
+	std::cout<< " key frames path is "<< keyframes_path <<std::endl;
+	// read cut of keyframes
+	std::vector<cv::Mat> labels;
+	std::vector<cv::Mat> images=read_video2Mat(video_path);
+	std::vector<int> keyframe_indexs=read_keyframes(keyframes_path,labels);
+
+	// assign labels fo keyframes
+	for(int i=0;i<keyframe_indexs.size();i++)
+	{
+		// assign values to labels
+	}
+
+	for(int i=0;i<keyframe_indexs.size()-1;i++)
+	{
+		int start_index=keyframe_indexs[i],end_index=keyframe_indexs[i+1];
+		int interval=end_index-start_index;
+		#define MAX_ITERATION_NUM 10
+		for(int iter=0;iter<MAX_ITERATION_NUM;iter++)
+		{
+			for(int i=0;i<interval;i++)
+			{
+				optimize_3_frame(i+start_index,images,labels);
+			}
+		}
+	}
+
+	
+
+	// read all frames
+
 }
 void VideoCut::doVideoPaste() {
+
 
 }
