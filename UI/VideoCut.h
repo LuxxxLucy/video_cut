@@ -22,12 +22,14 @@ public:
 	VideoCut(QWidget *parent = 0);
 	~VideoCut();
 
-	void createActions();                        	//´´½¨¶¯×÷
-	void createMenus();                           	//´´½¨²Ëµ¥
-	void createToolBars();                      	//´´½¨¹¤¾ßÀ¸
+	void createActions();                        	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	void createMenus();                           	//ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½
+	void createToolBars();                      	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	static void doVideoCut();
+	static void doVideoPaste();
 
 private:
-	QMenu *fileMenu;                           		//¸÷Ïî²Ëµ¥À¸
+	QMenu *fileMenu;                           		//ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½
 	QMenu *execMenu;
 	QMenu *editMenu;
 
@@ -36,7 +38,7 @@ private:
 	QString fileFull;
 	CenterWidget *centerWidget;
 
-	QAction *openVideoFileAction;                   //ÎÄ¼þ²Ëµ¥Ïî
+	QAction *openVideoFileAction;                   //ï¿½Ä¼ï¿½ï¿½Ëµï¿½ï¿½ï¿½
 	QAction *openBitMapAction;
 	QAction *SaveBitMapAction;
 	QAction *openCutVideoFileAction;
@@ -49,7 +51,7 @@ private:
 	QAction *undoAction;
 	QAction *redoAction;
 
-	QToolBar *fileTool;                          	//¹¤¾ßÀ¸
+	QToolBar *fileTool;                          	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	QToolBar *doToolBar;
 	QToolBar *execToolBar;
 	QToolBar *paintToolBar;
@@ -67,7 +69,4 @@ protected slots:
 	void ShowBgVideoFile();
 	void ShowColor();
 
-	void doVideoCut();
-	void doVideoPaste();
 };
-

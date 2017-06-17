@@ -47,7 +47,8 @@ add_executable( graphcut graphcut_example.cpp )
 target_link_libraries( graphcut ${OpenCV_LIBS} )
 
 # Tell CMake to create the helloworld executable
-add_executable(gui WIN32
+add_executable(gui
+    WIN32
     UI/main.cpp
     UI/CenterWidget.cpp
     UI/CenterWidget.h
@@ -66,3 +67,21 @@ target_link_libraries(gui
     ${ffmpeg_libs}
     ${FFMPEG_LIBRARIES}
     )
+
+add_executable( cmd_test
+    UI/cmd_test.cpp
+    UI/CenterWidget.cpp
+    UI/CenterWidget.h
+    UI/PaintWidget.cpp
+    UI/PaintWidget.h
+    UI/VideoCut.cpp
+    UI/VideoCut.h
+    UI/VideoDecoder.cpp
+    UI/VideoDecoder.h
+)
+target_link_libraries( cmd_test
+    ${Qt5Widgets_LIBRARIES}
+    ${OpenCV_LIBS}
+    ${ffmpeg_libs}
+    ${FFMPEG_LIBRARIES}
+ )

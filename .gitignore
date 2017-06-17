@@ -13,4 +13,5 @@ Makefile
 /gui_autogen
 /DisplayImage_autogen
 /graphcut_autogen
+/cmd_test_autogen
 
