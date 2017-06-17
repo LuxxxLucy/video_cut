@@ -111,30 +111,271 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named exe/graphcut
+# Target rules for targets named gui
 
 # Build rule for target.
-exe/graphcut: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 exe/graphcut
-.PHONY : exe/graphcut
+gui: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 gui
+.PHONY : gui
 
 # fast build rule for target.
-exe/graphcut/fast:
-	$(MAKE) -f CMakeFiles/exe/graphcut.dir/build.make CMakeFiles/exe/graphcut.dir/build
-.PHONY : exe/graphcut/fast
+gui/fast:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/build
+.PHONY : gui/fast
 
 #=============================================================================
-# Target rules for targets named exe/DisplayImage
+# Target rules for targets named graphcut
 
 # Build rule for target.
-exe/DisplayImage: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 exe/DisplayImage
-.PHONY : exe/DisplayImage
+graphcut: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 graphcut
+.PHONY : graphcut
 
 # fast build rule for target.
-exe/DisplayImage/fast:
-	$(MAKE) -f CMakeFiles/exe/DisplayImage.dir/build.make CMakeFiles/exe/DisplayImage.dir/build
-.PHONY : exe/DisplayImage/fast
+graphcut/fast:
+	$(MAKE) -f CMakeFiles/graphcut.dir/build.make CMakeFiles/graphcut.dir/build
+.PHONY : graphcut/fast
+
+#=============================================================================
+# Target rules for targets named DisplayImage
+
+# Build rule for target.
+DisplayImage: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 DisplayImage
+.PHONY : DisplayImage
+
+# fast build rule for target.
+DisplayImage/fast:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/build
+.PHONY : DisplayImage/fast
+
+#=============================================================================
+# Target rules for targets named gui_autogen
+
+# Build rule for target.
+gui_autogen: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 gui_autogen
+.PHONY : gui_autogen
+
+# fast build rule for target.
+gui_autogen/fast:
+	$(MAKE) -f CMakeFiles/gui_autogen.dir/build.make CMakeFiles/gui_autogen.dir/build
+.PHONY : gui_autogen/fast
+
+#=============================================================================
+# Target rules for targets named graphcut_autogen
+
+# Build rule for target.
+graphcut_autogen: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 graphcut_autogen
+.PHONY : graphcut_autogen
+
+# fast build rule for target.
+graphcut_autogen/fast:
+	$(MAKE) -f CMakeFiles/graphcut_autogen.dir/build.make CMakeFiles/graphcut_autogen.dir/build
+.PHONY : graphcut_autogen/fast
+
+#=============================================================================
+# Target rules for targets named DisplayImage_autogen
+
+# Build rule for target.
+DisplayImage_autogen: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 DisplayImage_autogen
+.PHONY : DisplayImage_autogen
+
+# fast build rule for target.
+DisplayImage_autogen/fast:
+	$(MAKE) -f CMakeFiles/DisplayImage_autogen.dir/build.make CMakeFiles/DisplayImage_autogen.dir/build
+.PHONY : DisplayImage_autogen/fast
+
+DisplayImage_autogen/moc_compilation.o: DisplayImage_autogen/moc_compilation.cpp.o
+
+.PHONY : DisplayImage_autogen/moc_compilation.o
+
+# target to build an object file
+DisplayImage_autogen/moc_compilation.cpp.o:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/DisplayImage_autogen/moc_compilation.cpp.o
+.PHONY : DisplayImage_autogen/moc_compilation.cpp.o
+
+DisplayImage_autogen/moc_compilation.i: DisplayImage_autogen/moc_compilation.cpp.i
+
+.PHONY : DisplayImage_autogen/moc_compilation.i
+
+# target to preprocess a source file
+DisplayImage_autogen/moc_compilation.cpp.i:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/DisplayImage_autogen/moc_compilation.cpp.i
+.PHONY : DisplayImage_autogen/moc_compilation.cpp.i
+
+DisplayImage_autogen/moc_compilation.s: DisplayImage_autogen/moc_compilation.cpp.s
+
+.PHONY : DisplayImage_autogen/moc_compilation.s
+
+# target to generate assembly for a file
+DisplayImage_autogen/moc_compilation.cpp.s:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/DisplayImage_autogen/moc_compilation.cpp.s
+.PHONY : DisplayImage_autogen/moc_compilation.cpp.s
+
+UI/CenterWidget.o: UI/CenterWidget.cpp.o
+
+.PHONY : UI/CenterWidget.o
+
+# target to build an object file
+UI/CenterWidget.cpp.o:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/CenterWidget.cpp.o
+.PHONY : UI/CenterWidget.cpp.o
+
+UI/CenterWidget.i: UI/CenterWidget.cpp.i
+
+.PHONY : UI/CenterWidget.i
+
+# target to preprocess a source file
+UI/CenterWidget.cpp.i:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/CenterWidget.cpp.i
+.PHONY : UI/CenterWidget.cpp.i
+
+UI/CenterWidget.s: UI/CenterWidget.cpp.s
+
+.PHONY : UI/CenterWidget.s
+
+# target to generate assembly for a file
+UI/CenterWidget.cpp.s:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/CenterWidget.cpp.s
+.PHONY : UI/CenterWidget.cpp.s
+
+UI/PaintWidget.o: UI/PaintWidget.cpp.o
+
+.PHONY : UI/PaintWidget.o
+
+# target to build an object file
+UI/PaintWidget.cpp.o:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/PaintWidget.cpp.o
+.PHONY : UI/PaintWidget.cpp.o
+
+UI/PaintWidget.i: UI/PaintWidget.cpp.i
+
+.PHONY : UI/PaintWidget.i
+
+# target to preprocess a source file
+UI/PaintWidget.cpp.i:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/PaintWidget.cpp.i
+.PHONY : UI/PaintWidget.cpp.i
+
+UI/PaintWidget.s: UI/PaintWidget.cpp.s
+
+.PHONY : UI/PaintWidget.s
+
+# target to generate assembly for a file
+UI/PaintWidget.cpp.s:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/PaintWidget.cpp.s
+.PHONY : UI/PaintWidget.cpp.s
+
+UI/VideoCut.o: UI/VideoCut.cpp.o
+
+.PHONY : UI/VideoCut.o
+
+# target to build an object file
+UI/VideoCut.cpp.o:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/VideoCut.cpp.o
+.PHONY : UI/VideoCut.cpp.o
+
+UI/VideoCut.i: UI/VideoCut.cpp.i
+
+.PHONY : UI/VideoCut.i
+
+# target to preprocess a source file
+UI/VideoCut.cpp.i:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/VideoCut.cpp.i
+.PHONY : UI/VideoCut.cpp.i
+
+UI/VideoCut.s: UI/VideoCut.cpp.s
+
+.PHONY : UI/VideoCut.s
+
+# target to generate assembly for a file
+UI/VideoCut.cpp.s:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/VideoCut.cpp.s
+.PHONY : UI/VideoCut.cpp.s
+
+UI/VideoDecoder.o: UI/VideoDecoder.cpp.o
+
+.PHONY : UI/VideoDecoder.o
+
+# target to build an object file
+UI/VideoDecoder.cpp.o:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/VideoDecoder.cpp.o
+.PHONY : UI/VideoDecoder.cpp.o
+
+UI/VideoDecoder.i: UI/VideoDecoder.cpp.i
+
+.PHONY : UI/VideoDecoder.i
+
+# target to preprocess a source file
+UI/VideoDecoder.cpp.i:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/VideoDecoder.cpp.i
+.PHONY : UI/VideoDecoder.cpp.i
+
+UI/VideoDecoder.s: UI/VideoDecoder.cpp.s
+
+.PHONY : UI/VideoDecoder.s
+
+# target to generate assembly for a file
+UI/VideoDecoder.cpp.s:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/VideoDecoder.cpp.s
+.PHONY : UI/VideoDecoder.cpp.s
+
+UI/main.o: UI/main.cpp.o
+
+.PHONY : UI/main.o
+
+# target to build an object file
+UI/main.cpp.o:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/main.cpp.o
+.PHONY : UI/main.cpp.o
+
+UI/main.i: UI/main.cpp.i
+
+.PHONY : UI/main.i
+
+# target to preprocess a source file
+UI/main.cpp.i:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/main.cpp.i
+.PHONY : UI/main.cpp.i
+
+UI/main.s: UI/main.cpp.s
+
+.PHONY : UI/main.s
+
+# target to generate assembly for a file
+UI/main.cpp.s:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/UI/main.cpp.s
+.PHONY : UI/main.cpp.s
+
+graphcut_autogen/moc_compilation.o: graphcut_autogen/moc_compilation.cpp.o
+
+.PHONY : graphcut_autogen/moc_compilation.o
+
+# target to build an object file
+graphcut_autogen/moc_compilation.cpp.o:
+	$(MAKE) -f CMakeFiles/graphcut.dir/build.make CMakeFiles/graphcut.dir/graphcut_autogen/moc_compilation.cpp.o
+.PHONY : graphcut_autogen/moc_compilation.cpp.o
+
+graphcut_autogen/moc_compilation.i: graphcut_autogen/moc_compilation.cpp.i
+
+.PHONY : graphcut_autogen/moc_compilation.i
+
+# target to preprocess a source file
+graphcut_autogen/moc_compilation.cpp.i:
+	$(MAKE) -f CMakeFiles/graphcut.dir/build.make CMakeFiles/graphcut.dir/graphcut_autogen/moc_compilation.cpp.i
+.PHONY : graphcut_autogen/moc_compilation.cpp.i
+
+graphcut_autogen/moc_compilation.s: graphcut_autogen/moc_compilation.cpp.s
+
+.PHONY : graphcut_autogen/moc_compilation.s
+
+# target to generate assembly for a file
+graphcut_autogen/moc_compilation.cpp.s:
+	$(MAKE) -f CMakeFiles/graphcut.dir/build.make CMakeFiles/graphcut.dir/graphcut_autogen/moc_compilation.cpp.s
+.PHONY : graphcut_autogen/moc_compilation.cpp.s
 
 graphcut_example.o: graphcut_example.cpp.o
 
@@ -142,7 +383,7 @@ graphcut_example.o: graphcut_example.cpp.o
 
 # target to build an object file
 graphcut_example.cpp.o:
-	$(MAKE) -f CMakeFiles/exe/graphcut.dir/build.make CMakeFiles/exe/graphcut.dir/graphcut_example.cpp.o
+	$(MAKE) -f CMakeFiles/graphcut.dir/build.make CMakeFiles/graphcut.dir/graphcut_example.cpp.o
 .PHONY : graphcut_example.cpp.o
 
 graphcut_example.i: graphcut_example.cpp.i
@@ -151,7 +392,7 @@ graphcut_example.i: graphcut_example.cpp.i
 
 # target to preprocess a source file
 graphcut_example.cpp.i:
-	$(MAKE) -f CMakeFiles/exe/graphcut.dir/build.make CMakeFiles/exe/graphcut.dir/graphcut_example.cpp.i
+	$(MAKE) -f CMakeFiles/graphcut.dir/build.make CMakeFiles/graphcut.dir/graphcut_example.cpp.i
 .PHONY : graphcut_example.cpp.i
 
 graphcut_example.s: graphcut_example.cpp.s
@@ -160,35 +401,62 @@ graphcut_example.s: graphcut_example.cpp.s
 
 # target to generate assembly for a file
 graphcut_example.cpp.s:
-	$(MAKE) -f CMakeFiles/exe/graphcut.dir/build.make CMakeFiles/exe/graphcut.dir/graphcut_example.cpp.s
+	$(MAKE) -f CMakeFiles/graphcut.dir/build.make CMakeFiles/graphcut.dir/graphcut_example.cpp.s
 .PHONY : graphcut_example.cpp.s
 
-preprocess.o: preprocess.cpp.o
+gui_autogen/moc_compilation.o: gui_autogen/moc_compilation.cpp.o
 
-.PHONY : preprocess.o
+.PHONY : gui_autogen/moc_compilation.o
 
 # target to build an object file
-preprocess.cpp.o:
-	$(MAKE) -f CMakeFiles/exe/DisplayImage.dir/build.make CMakeFiles/exe/DisplayImage.dir/preprocess.cpp.o
-.PHONY : preprocess.cpp.o
+gui_autogen/moc_compilation.cpp.o:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/gui_autogen/moc_compilation.cpp.o
+.PHONY : gui_autogen/moc_compilation.cpp.o
 
-preprocess.i: preprocess.cpp.i
+gui_autogen/moc_compilation.i: gui_autogen/moc_compilation.cpp.i
 
-.PHONY : preprocess.i
+.PHONY : gui_autogen/moc_compilation.i
 
 # target to preprocess a source file
-preprocess.cpp.i:
-	$(MAKE) -f CMakeFiles/exe/DisplayImage.dir/build.make CMakeFiles/exe/DisplayImage.dir/preprocess.cpp.i
-.PHONY : preprocess.cpp.i
+gui_autogen/moc_compilation.cpp.i:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/gui_autogen/moc_compilation.cpp.i
+.PHONY : gui_autogen/moc_compilation.cpp.i
 
-preprocess.s: preprocess.cpp.s
+gui_autogen/moc_compilation.s: gui_autogen/moc_compilation.cpp.s
 
-.PHONY : preprocess.s
+.PHONY : gui_autogen/moc_compilation.s
 
 # target to generate assembly for a file
-preprocess.cpp.s:
-	$(MAKE) -f CMakeFiles/exe/DisplayImage.dir/build.make CMakeFiles/exe/DisplayImage.dir/preprocess.cpp.s
-.PHONY : preprocess.cpp.s
+gui_autogen/moc_compilation.cpp.s:
+	$(MAKE) -f CMakeFiles/gui.dir/build.make CMakeFiles/gui.dir/gui_autogen/moc_compilation.cpp.s
+.PHONY : gui_autogen/moc_compilation.cpp.s
+
+readImage.o: readImage.cpp.o
+
+.PHONY : readImage.o
+
+# target to build an object file
+readImage.cpp.o:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/readImage.cpp.o
+.PHONY : readImage.cpp.o
+
+readImage.i: readImage.cpp.i
+
+.PHONY : readImage.i
+
+# target to preprocess a source file
+readImage.cpp.i:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/readImage.cpp.i
+.PHONY : readImage.cpp.i
+
+readImage.s: readImage.cpp.s
+
+.PHONY : readImage.s
+
+# target to generate assembly for a file
+readImage.cpp.s:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/readImage.cpp.s
+.PHONY : readImage.cpp.s
 
 # Help Target
 help:
@@ -198,14 +466,42 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... exe/graphcut"
-	@echo "... exe/DisplayImage"
+	@echo "... gui"
+	@echo "... graphcut"
+	@echo "... DisplayImage"
+	@echo "... gui_autogen"
+	@echo "... graphcut_autogen"
+	@echo "... DisplayImage_autogen"
+	@echo "... DisplayImage_autogen/moc_compilation.o"
+	@echo "... DisplayImage_autogen/moc_compilation.i"
+	@echo "... DisplayImage_autogen/moc_compilation.s"
+	@echo "... UI/CenterWidget.o"
+	@echo "... UI/CenterWidget.i"
+	@echo "... UI/CenterWidget.s"
+	@echo "... UI/PaintWidget.o"
+	@echo "... UI/PaintWidget.i"
+	@echo "... UI/PaintWidget.s"
+	@echo "... UI/VideoCut.o"
+	@echo "... UI/VideoCut.i"
+	@echo "... UI/VideoCut.s"
+	@echo "... UI/VideoDecoder.o"
+	@echo "... UI/VideoDecoder.i"
+	@echo "... UI/VideoDecoder.s"
+	@echo "... UI/main.o"
+	@echo "... UI/main.i"
+	@echo "... UI/main.s"
+	@echo "... graphcut_autogen/moc_compilation.o"
+	@echo "... graphcut_autogen/moc_compilation.i"
+	@echo "... graphcut_autogen/moc_compilation.s"
 	@echo "... graphcut_example.o"
 	@echo "... graphcut_example.i"
 	@echo "... graphcut_example.s"
-	@echo "... preprocess.o"
-	@echo "... preprocess.i"
-	@echo "... preprocess.s"
+	@echo "... gui_autogen/moc_compilation.o"
+	@echo "... gui_autogen/moc_compilation.i"
+	@echo "... gui_autogen/moc_compilation.s"
+	@echo "... readImage.o"
+	@echo "... readImage.i"
+	@echo "... readImage.s"
 .PHONY : help
 
 

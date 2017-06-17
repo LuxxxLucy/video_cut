@@ -1,6 +1,16 @@
 *.txt
 /CMakeFiles
+/cmake
 !CMakeLists.txt
-*.cmake
 !/exe/test_image
 /exe
+Makefile
+/Resources
+
+*.avi
+/data
+/Debug
+/gui_autogen
+/DisplayImage_autogen
+/graphcut_autogen
+
