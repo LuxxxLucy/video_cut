@@ -13,7 +13,7 @@
 #include <dirent.h>
 #include <boost/algorithm/string.hpp>
 #include <opencv2/legacy/legacy.hpp>
-
+#include <algorithm>
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
@@ -217,22 +217,18 @@ void optimize_3_frame(int k,std::vector<cv::Mat> images,std::vector<cv::Mat> &la
 					max_value=(max_value<labels[k+1].at<uchar>(i+x,j+y) ? labels[k+1].at<uchar>(i+x,j+y):max_value);
 				}
 			}
-			temp_label.at<uchar>(i,j)=(max_value==0 ? 0 : 3);
+			temp_label.at<uchar>(i,j)=(max_value==0 ? 2 : 3);
 		}
 	}
 	labels[k+1]=temp_label.clone();
 	cv::Rect rect(0,0,images[k+1].cols-1,images[k+1].rows-1);
 	cv::Mat image_copy = images[k+1].clone();
 	cv::Mat bgdModel,fgdModel;
-	cv::grabCut(image_copy,labels[k+1],rect,bgdModel,fgdModel,2,1);
+	cv::grabCut(image_copy,labels[k+1],rect,bgdModel,fgdModel,20,cv::GC_INIT_WITH_MASK);
+	std::cout << k << std::endl;
 	for(int i=0;i<row;i++){
 		for(int j=0;j<col ;j++){
-			cv::Vec3b temp_color = image_copy.at<cv::Vec3b>(i,j);
-			if(temp_color==cv::Vec3b(0,0,0)){
-				labels[k+1].at<uchar>(i,j)=0;
-			}else{
-				labels[k+1].at<uchar>(i,j)=1;
-			}
+			labels[k+1].at<uchar>(i,j)&=0x1;
 		}
 	}
 	return;
@@ -333,7 +329,7 @@ void merge_and_save(std::vector<cv::Mat> images,std::vector<cv::Mat> labels)
 		{
     		for(int j = 0; j < images[s].cols; j++)
 			{
-        		if(labels[s].at<uchar>(i,j)>=13)
+        		if(labels[s].at<uchar>(i,j)==0)
 				{
 					images[s].at<cv::Vec3b>(i,j)[0]=0;
 					images[s].at<cv::Vec3b>(i,j)[1]=0;
@@ -346,7 +342,27 @@ void merge_and_save(std::vector<cv::Mat> images,std::vector<cv::Mat> labels)
 		}
 		imwrite( "data/source/backVideo/"+std::to_string(s)+".png", images[s]);
 	}
+	std::cout << "image saving okay saving!"  << '\n';
+	std::string cmd= "ffmpeg -start_number 0 -i data/source/backVideo/%d.png -vcodec mpeg4 test.avi";
 
+	// system(cmd.c_str());
+
+}
+
+void VideoCut::initial(cv::Mat label,cv::Mat &image)
+{
+	int erosion_elem=2;
+	int erosion_type;
+	if( erosion_elem == 0 ){ erosion_type = MORPH_RECT; }
+	else if( erosion_elem == 1 ){ erosion_type = MORPH_CROSS; }
+	else if( erosion_elem == 2) { erosion_type = MORPH_ELLIPSE; }
+
+	int erosion_size=10;
+	cv::Mat element = cv::getStructuringElement( erosion_type, Size( 2*erosion_size + 1, 2*erosion_size+1 ), cv::Point( erosion_size, erosion_size ) );
+	/// Apply the erosion operation
+	cv::Mat temp;
+	erode( label, temp, element );
+	for
 }
 
 void VideoCut::doVideoCut() {
@@ -358,6 +374,7 @@ void VideoCut::doVideoCut() {
 	std::vector<cv::Mat> labels,temp_labels;
 	std::cout<< " key frames path is "<< keyframes_path <<std::endl;
 	std::vector<int> keyframe_indexs=read_keyframes(keyframes_path,temp_labels);
+	std::sort(keyframe_indexs.begin(),keyframe_indexs.end());
 	std::cout<< " preprocessing okay,labelled frames "<< temp_labels.size() <<std::endl;
 
 	std::cout<< " video path is "<< video_path <<std::endl;
@@ -381,61 +398,60 @@ void VideoCut::doVideoCut() {
 			for(int y=0;y<temp_labels[i].cols;y++)
 			{
 				change_labels.at<uchar>(x,y)=flag;
-				// std::cout<<temp_labels[i].at<uchar>(x,y)<<"\n";
 				if(temp_labels[i].at<uchar>(x,y)>0)
 				{
 					if(!booll){
 						booll=true;
 					}
-					else
+				}else{
+					if(booll)
 					{
-						booll=false;
+						if(flag==2)
+							flag=3;
+						else
+							flag=2;
 					}
+					booll=false;
 				}
-				if(booll)
-					flag=3;
-				else
-					flag=2;
 			}
 		}
 		temp_labels[i]=change_labels.clone();
 	}
-	cv::Mat bgdModel,fgdModel;
 	for(int i=0;i<keyframe_indexs.size();i++)
 	{
-		std::cout << keyframe_indexs[i] << '\n';
 		labels[keyframe_indexs[i]]=temp_labels[i].clone();
 		cv::Rect rect(0,0,images[i+1].cols,images[i+1].rows);
 		cv::Mat image_copy = images[keyframe_indexs[i]].clone();
-		cv::grabCut(image_copy,labels[keyframe_indexs[i]],rect,bgdModel,fgdModel,2,cv::GC_INIT_WITH_MASK);
+		cv::Mat bgdModel,fgdModel;
+		cv::grabCut(image_copy,labels[keyframe_indexs[i]],rect,bgdModel,fgdModel,20,cv::GC_INIT_WITH_MASK);
 		for(int j=0;j<image_copy.rows;j++){
 			for(int k=0;k<image_copy.cols ;k++){
-				cv::Vec3b temp_color = image_copy.at<cv::Vec3b>(j,k);
-				if(temp_color==cv::Vec3b(0,0,0)){
-					labels[keyframe_indexs[i]].at<uchar>(j,k)=0;
-				}else{
-					labels[keyframe_indexs[i]].at<uchar>(j,k)=1;
-				}
+				labels[keyframe_indexs[i]].at<uchar>(j,k)&=0x1;
 			}
 		}
 	}
-
 	std::cout<< " label initial okay " <<std::endl;
-
 	for(int i=0;i<keyframe_indexs.size()-1;i++)
 	{
 		int start_index=keyframe_indexs[i],end_index=keyframe_indexs[i+1];
+		// if(start_index>)
+		// 	break;
 		int interval=end_index-start_index;
 		#define MAX_ITERATION_NUM 1
 		for(int iter=0;iter<MAX_ITERATION_NUM;iter++)
 		{
 			for(int i=0;i<interval-1;i++)
 			{
+				std::cout << "do optimize_3_frame" << std::endl;
 				optimize_3_frame(i+start_index,images,labels);
 			}
 		}
 	}
-
+	//keyframe的最后一针不是视频的最后一帧，所以增加这段代码
+	// int start_index=keyframe_indexs[keyframe_indexs.size()-1],end_index=images.size();
+	// for(int i=0;i<end_index-start_index-1;i++){
+	// 	optimize_3_frame(i+start_index,images,labels);
+	// }
 	// read all frames
 	std::cout << "cut okay!" << '\n';
 	merge_and_save(images,labels);
