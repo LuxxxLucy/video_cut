@@ -14,6 +14,7 @@
 #include <boost/algorithm/string.hpp>
 #include <opencv2/legacy/legacy.hpp>
 #include <algorithm>
+#include <math.h>
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
@@ -201,6 +202,119 @@ void VideoCut::ShowColor()
 	}
 }
 
+void save_label_image(cv::Mat label,std::string path)
+{
+	cv::Mat new_label= label.clone();
+	for(int i = 0; i < new_label.rows; i++)
+	{
+		for(int j = 0; j < new_label.cols; j++)
+		{
+    		if(label.at<uchar>(i,j)>0)
+			{
+				new_label.at<uchar>(i,j)=255;
+				// new_label.at<uchar>(i,j)[1]=2;
+				// new_label.at<uchar>(i,j)[2]=2;
+			}
+		}
+	}
+	cv::imwrite(path,new_label);
+	return;
+}
+
+void save_label_image_1(cv::Mat label,std::string path)
+{
+	cv::Mat new_label= label.clone();
+	for(int i = 0; i < new_label.rows; i++)
+	{
+		for(int j = 0; j < new_label.cols; j++)
+		{
+    		if(label.at<uchar>(i,j)==0)
+			{
+				new_label.at<uchar>(i,j)=0;
+				// new_label.at<uchar>(i,j)[1]=2;
+				// new_label.at<uchar>(i,j)[2]=2;
+			}
+		}
+	}
+	cv::imwrite(path,new_label);
+	return;
+}
+void erosion(cv::Mat &label_o)
+{
+	cv::Mat label=label_o.clone();
+	int erosion_elem=2;
+	int erosion_type;
+	if( erosion_elem == 0 ){ erosion_type = cv::MORPH_RECT; }
+	else if( erosion_elem == 1 ){ erosion_type = cv::MORPH_CROSS; }
+	else if( erosion_elem == 2) { erosion_type = cv::MORPH_ELLIPSE; }
+	int erosion_size=5;
+	cv::Mat element = cv::getStructuringElement( erosion_type, cv::Size( 2*erosion_size + 1, 2*erosion_size+1 ), cv::Point( erosion_size, erosion_size ) );
+	/// Apply the erosion operation
+	cv::Mat temp=label.clone();
+	// dilate( label, label_o, element );
+	erode( label, temp, element );
+
+	return;
+}
+
+void dilation(cv::Mat &label_o)
+{
+	cv::Mat label=label_o.clone();
+	int elem=2;
+	int type;
+	if( elem == 0 ){ type = cv::MORPH_RECT; }
+	else if( elem == 1 ){ type = cv::MORPH_CROSS; }
+	else if( elem == 2) { type = cv::MORPH_ELLIPSE; }
+	int size=10;
+	cv::Mat element = cv::getStructuringElement( type, cv::Size( 2*size + 1, 2*size+1 ), cv::Point( size, size ) );
+	/// Apply the erosion operation
+	cv::Mat temp=label.clone();
+	// dilate( label, label_o, element );
+	dilate( label, temp, element );
+	return;
+}
+
+void mat_linear_interploate(cv::Mat m1,cv::Mat m2,cv::Mat m3)
+{
+	return;
+}
+
+void bidirection_tracking_3_frame(int k,std::vector<cv::Mat> images,std::vector<cv::Mat> &labels)
+{
+	cv::Mat temp_label=labels[k+1].clone();
+	int row = temp_label.rows;
+	int col = temp_label.cols;
+	for(int i=0;i<row;i++)
+	{
+		for(int j=0;j<col;j++)
+		{
+				labels[k+1].at<uchar>(i,j)=(uchar) ((labels[k].at<uchar>(i,j)+ labels[k+2].at<uchar>(i,j)) / 2.0);
+		}
+	}
+
+	auto anchor = cv::Point( -1, -1 );
+	int delta = 0;
+	int ddepth = -1;
+	int ind = 1;
+
+	cv::Mat temp_mat1,temp_mat2;
+	/// Update kernel size for a normalized box filter
+	int kernel_size = 3 + 2*( ind%5 );
+	cv::Mat kernel = cv::Mat::ones( kernel_size, kernel_size, CV_32F )/ (float)(kernel_size*kernel_size);
+	/// Apply filter
+	// cv::filter2D(labels[k+1], temp_mat1, ddepth , kernel, anchor, delta, cv::BORDER_DEFAULT );
+	// labels[k+1]=temp_mat1.clone();
+	// dilation(labels[k+1]);
+
+	// cv::filter2D(labels[k+1], temp_mat1, ddepth , kernel, anchor, delta, cv::BORDER_DEFAULT );
+	// cv::filter2D(labels[k+2], temp_mat2, ddepth , kernel, anchor, delta, cv::BORDER_DEFAULT );
+
+
+
+
+	return;
+}
+
 void optimize_3_frame(int k,std::vector<cv::Mat> images,std::vector<cv::Mat> &labels)
 {
 	labels[k+1]=labels[k];
@@ -212,8 +326,8 @@ void optimize_3_frame(int k,std::vector<cv::Mat> images,std::vector<cv::Mat> &la
 	for(int i=0 ; i<row ; i++){
 		for(int j=0 ; j<col ; j++){
 			max_value=0;
-			for(int x=0 ; x<11&&x+i<row ; x++){
-				for(int y=0 ; y<11&&y+j<col ; y++){
+			for(int x=0 ; x<10&&x+i<row ; x++){
+				for(int y=0 ; y<10&&y+j<col ; y++){
 					max_value=(max_value<labels[k+1].at<uchar>(i+x,j+y) ? labels[k+1].at<uchar>(i+x,j+y):max_value);
 				}
 			}
@@ -224,14 +338,80 @@ void optimize_3_frame(int k,std::vector<cv::Mat> images,std::vector<cv::Mat> &la
 	cv::Rect rect(0,0,images[k+1].cols-1,images[k+1].rows-1);
 	cv::Mat image_copy = images[k+1].clone();
 	cv::Mat bgdModel,fgdModel;
-	cv::grabCut(image_copy,labels[k+1],rect,bgdModel,fgdModel,20,cv::GC_INIT_WITH_MASK);
-	std::cout << k << std::endl;
+	cv::grabCut(image_copy,labels[k+1],rect,bgdModel,fgdModel,2,cv::GC_INIT_WITH_MASK);
 	for(int i=0;i<row;i++){
 		for(int j=0;j<col ;j++){
 			labels[k+1].at<uchar>(i,j)&=0x1;
 		}
 	}
+	cv::Mat l_d=labels[k].clone();
+	dilation(l_d);
+	for(int i=0;i<row;i++)
+	{
+		for(int j=0;j<col ;j++)
+		{
+			labels[k+1].at<uchar>(i,j)|=l_d.at<uchar>(i,j);
+		}
+	}
+	cv::Mat l=labels[k].clone();
+	erosion(l);
+	for(int i=0;i<row;i++)
+	{
+		for(int j=0;j<col ;j++)
+		{
+			labels[k+1].at<uchar>(i,j)&=l.at<uchar>(i,j);
+		}
+	}
 	return;
+}
+
+void bidirection_tracking(int start_index,int end_index,std::vector<cv::Mat> &images,std::vector<cv::Mat> &labels)
+{
+	std::cout << "start bidirection tracking" << std::endl;
+	#define MAX_ITERATION_NUM 10
+	int interval=end_index-start_index;
+	int row = labels[start_index].rows;
+	int col = labels[start_index].cols;
+	for(int i=start_index;i<=end_index;i++)
+	{
+		for(int j=0 ; j<row ; j++)
+		{
+			for(int k=0 ; k<col ; k++)
+			{
+				if( labels[i].at<uchar>(j,k)==1)
+					labels[i].at<uchar>(j,k)=255;
+			}
+		}
+	}
+
+	labels[end_index-1]=labels[end_index].clone();
+
+	std::cout << "initialize tracking" << std::endl;
+	for(int iter=0;iter<MAX_ITERATION_NUM;iter++)
+	{
+		for(int j=0;j<interval-1;j++)
+		{
+			// std::cout << "do bidirection trackingframe _3_frame" << std::endl;
+			bidirection_tracking_3_frame(j+start_index,images,labels);
+			bidirection_tracking_3_frame(interval-2-j+start_index,images,labels);
+			// std::cout << "do bidirection reverse trackingframe _3_frame" << std::endl;
+		}
+	}
+	save_label_image_1(labels[end_index-1],"data/testlabel11.png");
+	save_label_image_1(labels[end_index-2],"data/testlabel10.png");
+	for(int i=start_index;i<=end_index;i++)
+	{
+		for(int j=0 ; j<row ; j++)
+		{
+			for(int k=0 ; k<col ; k++)
+			{
+				if(labels[i].at<uchar>(j,k)>20)
+					labels[i].at<uchar>(j,k)=1;
+			}
+		}
+	}
+	save_label_image(labels[end_index-1],"data/testlabel11_after.png");
+	save_label_image(labels[end_index-2],"data/testlabel10_after.png");
 }
 
 std::vector<cv::Mat> read_video2Mat(std::string video_path)
@@ -259,11 +439,11 @@ std::vector<cv::Mat> read_video2Mat(std::string video_path)
 		std::vector<std::string> fields;
 		boost::split( fields, dirp->d_name, boost::is_any_of( "." ) );
 		int i=(int)std::atof(fields[0].c_str() );
-		index.push_back(i);
 		cv::Mat img = cv::imread(fname,CV_LOAD_IMAGE_COLOR);
 		if (img.empty()) {
 			continue;
 		}
+		index.push_back(i);
 		images_temp.push_back(img.clone());
 	}
 	closedir(dp);
@@ -302,13 +482,12 @@ std::vector<int> read_keyframes(std::string dirname,std::vector<cv::Mat>& labels
 		std::vector<std::string> fields;
 
 		boost::split( fields, dirp->d_name, boost::is_any_of( "." ) );
-		index.push_back( (int)std::atof(fields[0].c_str() ) );
 		cv::Mat img = cv::imread(fname,CV_LOAD_IMAGE_GRAYSCALE);
-		std::cout << img.channels() << '\n';
 
 		if (img.empty()) {
 			continue;
 		}
+		index.push_back( (int)std::atof(fields[0].c_str() ) );
 		labels.push_back(img.clone());
 	}
 	closedir(dp);
@@ -323,47 +502,103 @@ void merge_and_save(std::vector<cv::Mat> images,std::vector<cv::Mat> labels)
 	std::cout << (images[0].type()==CV_32FC3?0:1) << 	'\n';
 	std::cout << labels[0].type() << '\n';
 	std::cout << "now start saving!"  << '\n';
+
+
+	auto anchor = cv::Point( -1, -1 );
+	int delta = 0;
+	int ddepth = -1;
+	int ind = 10;
+
+	cv::Mat temp_mat,trans_label;
+	/// Update kernel size for a normalized box filter
+	int kernel_size = 3 + 2*( ind%5 );
+	cv::Mat kernel = cv::Mat::ones( kernel_size, kernel_size, CV_32F )/ (float)(kernel_size*kernel_size);
+
 	for (int s=0;s<labels.size();s++)
 	{
+		trans_label=labels[s].clone();
 		for(int i = 0; i < images[s].rows; i++)
 		{
     		for(int j = 0; j < images[s].cols; j++)
 			{
-        		if(labels[s].at<uchar>(i,j)==0)
+				if(trans_label.at<uchar>(i,j)==1)
+				{
+					trans_label.at<uchar>(i,j)=255;
+				}
+			}
+		}
+
+		dilation(trans_label);
+		cv::filter2D(trans_label, temp_mat, ddepth , kernel, anchor, delta, cv::BORDER_DEFAULT );
+		trans_label=temp_mat.clone();
+		// Read the images
+
+
+		for(int i = 0; i < images[s].rows; i++)
+		{
+			/// Apply filter
+
+    		for(int j = 0; j < images[s].cols; j++)
+			{
+        		if(trans_label.at<uchar>(i,j)==0)
 				{
 					images[s].at<cv::Vec3b>(i,j)[0]=0;
 					images[s].at<cv::Vec3b>(i,j)[1]=0;
 					images[s].at<cv::Vec3b>(i,j)[2]=0;
-					// images[s].at<int>(i,j,0)=0;
-					// images[s].at<int>(i,j,1)=0;
-					// images[s].at<int>(i,j,2)=0;
 				}
+				else
+				{
+					int cons=16;
+					// double alpha= (pow( cons,trans_label.at<uchar>(i,j)/255.0)-1)/(cons-1);
+					double alpha= (trans_label.at<uchar>(i,j)/255.0);
+					images[s].at<cv::Vec3b>(i,j)[0]*= (int) alpha;
+					images[s].at<cv::Vec3b>(i,j)[1]*= (int) alpha;
+					images[s].at<cv::Vec3b>(i,j)[2]*= (int) alpha;
+				}
+				/// Apply filter
 			}
 		}
-		imwrite( "data/source/backVideo/"+std::to_string(s)+".png", images[s]);
+		cv::imwrite( "data/source/backVideo/"+std::to_string(s)+".png", images[s]);
 	}
 	std::cout << "image saving okay saving!"  << '\n';
 	std::string cmd= "ffmpeg -start_number 0 -i data/source/backVideo/%d.png -vcodec mpeg4 test.avi";
 
-	// system(cmd.c_str());
+	system(cmd.c_str());
 
 }
 
-void VideoCut::initial(cv::Mat label,cv::Mat &image)
+void initial(cv::Mat &label_o,cv::Mat &new_label)
 {
+	cv::Mat label=label_o.clone();
 	int erosion_elem=2;
 	int erosion_type;
-	if( erosion_elem == 0 ){ erosion_type = MORPH_RECT; }
-	else if( erosion_elem == 1 ){ erosion_type = MORPH_CROSS; }
-	else if( erosion_elem == 2) { erosion_type = MORPH_ELLIPSE; }
+	if( erosion_elem == 0 ){ erosion_type = cv::MORPH_RECT; }
+	else if( erosion_elem == 1 ){ erosion_type = cv::MORPH_CROSS; }
+	else if( erosion_elem == 2) { erosion_type = cv::MORPH_ELLIPSE; }
 
-	int erosion_size=10;
-	cv::Mat element = cv::getStructuringElement( erosion_type, Size( 2*erosion_size + 1, 2*erosion_size+1 ), cv::Point( erosion_size, erosion_size ) );
+	int erosion_size=5;
+	cv::Mat element = cv::getStructuringElement( erosion_type, cv::Size( 2*erosion_size + 1, 2*erosion_size+1 ), cv::Point( erosion_size, erosion_size ) );
 	/// Apply the erosion operation
-	cv::Mat temp;
-	erode( label, temp, element );
-	for
+	cv::Mat temp=label.clone();
+	dilate( label, temp, element );
+	// erode( label, temp, element );
+
+	for(int i = 0; i < new_label.rows; i++)
+	{
+		for(int j = 0; j < new_label.cols; j++)
+		{
+    		if(temp.at<uchar>(i,j)==2)
+			{
+				new_label.at<uchar>(i,j)=2;
+				// new_label.at<uchar>(i,j)[1]=2;
+				// new_label.at<uchar>(i,j)[2]=2;
+			}
+		}
+	}
+	return;
+
 }
+
 
 void VideoCut::doVideoCut() {
 	//Դ��Ƶ���ļ����� this->fileFull��ȡ  ����ͼ�ļ�����this->centerWidget->getSavePath()��ȡ Ŀ���ļ����û�û��ָ�������ͷ��ڰ���֮ǰ�����Ʒ���data��������ĳ��Ŀ¼�����ɣ����Լ���
@@ -381,7 +616,7 @@ void VideoCut::doVideoCut() {
 	std::vector<cv::Mat> images=read_video2Mat(video_path);
 	std::cout<< " preprocessing okay,total frames "<< images.size() <<std::endl;
 
-	std::cout << temp_labels[0].channels() << '\n';
+
 	// assign labels fo keyframes
 	for(int i=0;i<images.size();i++)
 	{
@@ -417,19 +652,39 @@ void VideoCut::doVideoCut() {
 		}
 		temp_labels[i]=change_labels.clone();
 	}
+
 	for(int i=0;i<keyframe_indexs.size();i++)
 	{
 		labels[keyframe_indexs[i]]=temp_labels[i].clone();
 		cv::Rect rect(0,0,images[i+1].cols,images[i+1].rows);
 		cv::Mat image_copy = images[keyframe_indexs[i]].clone();
+		int s=keyframe_indexs[i];
+		// save_label_image(labels[keyframe_indexs[i]],"data/source/label_before_er.png");
+
+		// initial(labels[keyframe_indexs[i]],labels[keyframe_indexs[i]]);
+		// save_label_image(labels[keyframe_indexs[i]],"data/source/label.png");
+		// imwrite( "data/source/testafter_"+std::to_string(s)+".png", image_copy);
 		cv::Mat bgdModel,fgdModel;
+		cv::Mat l_old = labels[keyframe_indexs[i]].clone();
 		cv::grabCut(image_copy,labels[keyframe_indexs[i]],rect,bgdModel,fgdModel,20,cv::GC_INIT_WITH_MASK);
+		cv::Mat image_copy_new=image_copy.clone();
+		std::cout << "done" << '\n';
 		for(int j=0;j<image_copy.rows;j++){
 			for(int k=0;k<image_copy.cols ;k++){
 				labels[keyframe_indexs[i]].at<uchar>(j,k)&=0x1;
 			}
 		}
+		// imwrite( "data/source/testaftergraphcut_"+std::to_string(s)+".png", labels[keyframe_indexs[i]]);
+
+		for(int j=0;j<l_old.rows;j++){
+			for(int k=0;k<l_old.cols ;k++){
+				labels[keyframe_indexs[i]].at<uchar>(j,k)&= (l_old.at<uchar>(j,k)-2);
+			}
+		}
+
+		// save_label_image_1(labels[keyframe_indexs[i]],"data/source/label_aftercut.png");
 	}
+
 	std::cout<< " label initial okay " <<std::endl;
 	for(int i=0;i<keyframe_indexs.size()-1;i++)
 	{
@@ -437,16 +692,17 @@ void VideoCut::doVideoCut() {
 		// if(start_index>)
 		// 	break;
 		int interval=end_index-start_index;
-		#define MAX_ITERATION_NUM 1
-		for(int iter=0;iter<MAX_ITERATION_NUM;iter++)
+		for(int j=0;j<interval-1;j++)
 		{
-			for(int i=0;i<interval-1;i++)
-			{
-				std::cout << "do optimize_3_frame" << std::endl;
-				optimize_3_frame(i+start_index,images,labels);
-			}
+			std::cout << "do optimize_3_frame" << std::endl;
+			optimize_3_frame(j+start_index,images,labels);
 		}
+		bidirection_tracking(start_index,end_index,images,labels);
 	}
+
+	save_label_image(labels[11],"data/testlabel11_after_out.png");
+	save_label_image(labels[10],"data/testlabel10_after_out.png");
+	std::cout << labels[10] << '\n';
 	//keyframe的最后一针不是视频的最后一帧，所以增加这段代码
 	// int start_index=keyframe_indexs[keyframe_indexs.size()-1],end_index=images.size();
 	// for(int i=0;i<end_index-start_index-1;i++){
@@ -456,7 +712,7 @@ void VideoCut::doVideoCut() {
 	std::cout << "cut okay!" << '\n';
 	merge_and_save(images,labels);
 }
-void VideoCut::doVideoPaste() {
 
+void VideoCut::doVideoPaste() {
 
 }
