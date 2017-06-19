@@ -1,6 +1,5 @@
 *.txt
 /CMakeFiles
-/cmake
 !CMakeLists.txt
 !/exe/test_image
 /exe
