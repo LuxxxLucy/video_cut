@@ -35,66 +35,66 @@ VideoCut::~VideoCut() {
 }
 void VideoCut::createActions()
 {
-	//"����Դ�ļ�"����
-	openVideoFileAction = new QAction(QIcon("Resources/open_orivideo.png"), tr("����Դ��Ƶ"), this);
+	//"????????"????
+	openVideoFileAction = new QAction(QIcon("Resources/open_orivideo.png"), tr("导入原视频"), this);
 	openVideoFileAction->setShortcut(tr("Ctrl+O"));
-	openVideoFileAction->setStatusTip(tr("����Դ��Ƶ"));
+	openVideoFileAction->setStatusTip(tr("导入原视频"));
 	connect(openVideoFileAction, SIGNAL(triggered()), this, SLOT(ShowOriginalVideoFile()));
 
-	//"�������йؼ�֡"����
-	openBitMapAction = new QAction(QIcon("Resources/open_bitmap.png"), tr("�������йؼ�֡"), this);
+	//"???????��???"????
+	openBitMapAction = new QAction(QIcon("Resources/open_bitmap.png"), tr("导入关键帧֡"), this);
 	openBitMapAction->setShortcut(tr("Ctrl+M"));
-	openBitMapAction->setStatusTip(tr("�������йؼ�֡"));
+	openBitMapAction->setStatusTip(tr("导入关键帧"));
 	connect(openBitMapAction, SIGNAL(triggered()), this, SLOT(ShowBitMap()));
 
-	//"�����ؼ�֡"����
-	SaveBitMapAction = new QAction(QIcon("Resources/save_bitmap.png"), tr("�����ؼ�֡"), this);
+	//"????????"????
+	SaveBitMapAction = new QAction(QIcon("Resources/save_bitmap.png"), tr("保存关键帧֡"), this);
 	SaveBitMapAction->setShortcut(tr("Ctrl+S"));
-	SaveBitMapAction->setStatusTip(tr("�����ؼ�֡"));
+	SaveBitMapAction->setStatusTip(tr("保存关键帧֡"));
 	connect(SaveBitMapAction, SIGNAL(triggered()), this, SLOT(SaveBitMap()));
 
-	//"������ȡ����"����
-	openCutVideoFileAction = new QAction(QIcon("Resources/open_cut_video.png"), tr("������ȡ����"), this);
+	//"???????????"????
+	openCutVideoFileAction = new QAction(QIcon("Resources/open_cut_video.png"), tr("导入截取结果"), this);
 	openCutVideoFileAction->setShortcut(tr("Ctrl+W"));
-	openCutVideoFileAction->setStatusTip(tr("������ȡ����"));
+	openCutVideoFileAction->setStatusTip(tr("导入截取结果"));
 	connect(openCutVideoFileAction, SIGNAL(triggered()), this, SLOT(ShowVideoCutFile()));
 
-	//"���뱳����Ƶ"����
-	openBgVideoFileAction = new QAction(QIcon("Resources/open_bg_video.png"), tr("���뱳����Ƶ"), this);
+	//"?????????"????
+	openBgVideoFileAction = new QAction(QIcon("Resources/open_bg_video.png"), tr("导入背景视频"), this);
 	openBgVideoFileAction->setShortcut(tr("Ctrl+B"));
-	openBgVideoFileAction->setStatusTip(tr("���뱳����Ƶ"));
+	openBgVideoFileAction->setStatusTip(tr("导入背景视频"));
 	connect(openBgVideoFileAction, SIGNAL(triggered()), this, SLOT(ShowBgVideoFile()));
 
-	//"videocut"����
-	videoCutOutAction = new QAction(QIcon("Resources/cut.png"), tr("��ȡ��Ƶ����"), this);
+	//"videocut"????
+	videoCutOutAction = new QAction(QIcon("Resources/cut.png"), tr("do video cut"), this);
 	videoCutOutAction->setShortcut(tr("Ctrl+X"));
-	videoCutOutAction->setStatusTip(tr("��ȡ��Ƶ����"));
+	videoCutOutAction->setStatusTip(tr("do video cut"));
 	connect(videoCutOutAction, SIGNAL(triggered()), this, SLOT(doVideoCut()));
 
-	//"videopaste"����
-	videoPasteAction = new QAction(QIcon("Resources/paste.png"), tr("ճ����Ŀ����Ƶ"), this);
+	//"videopaste"????
+	videoPasteAction = new QAction(QIcon("Resources/paste.png"), tr("paste"), this);
 	videoPasteAction->setShortcut(tr("Ctrl+V"));
-	videoPasteAction->setStatusTip(tr("ճ����Ŀ����Ƶ"));
+	videoPasteAction->setStatusTip(tr("paste"));
 	connect(videoPasteAction, SIGNAL(triggered()), this, SLOT(doVideoPaste()));
 
-	//"�˳�"����
-	exitAction = new QAction(QIcon("Resources/exit.png"),tr("�˳�"), this);
+	//"???"????
+	exitAction = new QAction(QIcon("Resources/exit.png"),tr("exit"), this);
 	exitAction->setShortcut(tr("Ctrl+Q"));
-	exitAction->setStatusTip(tr("�˳�����"));
+	exitAction->setStatusTip(tr("exit"));
 	connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
-	//ʵ�ֳ����������Ķ�����Action��
-	//����������
-	undoAction = new QAction(QIcon("Resources/undo.png"), "����", this);
+	//???????????????????Action??
+	//??????????
+	undoAction = new QAction(QIcon("Resources/undo.png"), "undo", this);
 	//connect(undoAction, SIGNAL(triggered()), showWidget->text, SLOT(undo()));
-	redoAction = new QAction(QIcon("Resources/redo.png"), "����", this);
+	redoAction = new QAction(QIcon("Resources/redo.png"), "redo", this);
 	//connect(redoAction, SIGNAL(triggered()), showWidget->text, SLOT(redo()));
 }
 
 void VideoCut::createMenus()
 {
-	//�ļ��˵�
-	fileMenu = menuBar()->addMenu(tr("�ļ�"));
+	//??????
+	fileMenu = menuBar()->addMenu(tr("file"));
 	fileMenu->addAction(openVideoFileAction);
 	fileMenu->addAction(openBitMapAction);
 	fileMenu->addAction(SaveBitMapAction);
@@ -103,11 +103,11 @@ void VideoCut::createMenus()
 	fileMenu->addSeparator();
 	fileMenu->addAction(exitAction);
 
-	editMenu = menuBar()->addMenu(tr("�༭"));
+	editMenu = menuBar()->addMenu(tr("edit"));
 	editMenu->addAction(undoAction);
 	editMenu->addAction(redoAction);
 
-	execMenu = menuBar()->addMenu(tr("����"));
+	execMenu = menuBar()->addMenu(tr("execute"));
 	execMenu->addAction(videoCutOutAction);
 	execMenu->addAction(videoPasteAction);
 
@@ -115,7 +115,7 @@ void VideoCut::createMenus()
 
 void VideoCut::createToolBars()
 {
-	//�ļ�������
+	//?????????
 	fileTool = addToolBar("File");
 	fileTool->addAction(openVideoFileAction);
 	fileTool->addAction(openBitMapAction);
@@ -123,7 +123,7 @@ void VideoCut::createToolBars()
 	fileTool->addAction(openCutVideoFileAction);
 	fileTool->addAction(openBgVideoFileAction);
 
-	//����������������
+	//????????????????
 	doToolBar = addToolBar("doEdit");
 	doToolBar->addAction(undoAction);
 	doToolBar->addAction(redoAction);
@@ -133,19 +133,19 @@ void VideoCut::createToolBars()
 	execToolBar->addAction(videoPasteAction);
 
 	paintToolBar = addToolBar("paint");
-	widthLabel = new QLabel(tr("�߿���"));    		//�����߿�ѡ���ؼ�
+	widthLabel = new QLabel(tr("线宽"));    		//?????????????
 	widthSpinBox = new QSpinBox;
 	widthSpinBox->setValue(2);
 	connect(widthSpinBox, SIGNAL(valueChanged(int)), centerWidget, SLOT(setWidth(int)));
 
-	colorBtn = new QToolButton;                  //������ɫѡ���ؼ�
+	colorBtn = new QToolButton;                  //?????????????
 	QPixmap pixmap(20, 20);
 	pixmap.fill(Qt::blue);
 	colorBtn->setIcon(QIcon(pixmap));
 	connect(colorBtn, SIGNAL(clicked()), this, SLOT(ShowColor()));
 
-	clearBtn = new QToolButton();               	//����������ť
-	clearBtn->setText(tr("����"));
+	clearBtn = new QToolButton();               	//???????????
+	clearBtn->setText(tr("清除"));
 	connect(clearBtn, SIGNAL(clicked()), centerWidget, SLOT(clear()));
 
 	paintToolBar->addWidget(widthLabel);
@@ -156,7 +156,7 @@ void VideoCut::createToolBars()
 
 void VideoCut::ShowOriginalVideoFile()
 {
-	fileFull = QFileDialog::getOpenFileName(this, "����Դ��Ƶ", "/", "Video files(*.avi;*.mp4;*.mkv;*.rmvb;*.mov;*.wmv)");
+	fileFull = QFileDialog::getOpenFileName(this, "导入原视频", "/", "Video files(*.avi;*.mp4;*.mkv;*.rmvb;*.mov;*.wmv)");
 	QFileInfo finfo = QFileInfo(fileFull);
 	fileName = finfo.fileName();
 	filePath = finfo.absolutePath();
@@ -170,7 +170,7 @@ void VideoCut::ShowOriginalVideoFile()
 	}
 }
 void VideoCut::ShowBitMap() {
-	QFileDialog* fd = new QFileDialog(this, "ѡ���ؼ�֡�ļ���", "file");
+	QFileDialog* fd = new QFileDialog(this, "选择关键帧文件夹", "file");
 	fd->setFileMode(QFileDialog::Directory);
 	if (fd->exec() == QDialog::Accepted)
 	{
@@ -192,7 +192,7 @@ void VideoCut::ShowBgVideoFile() {
 
 void VideoCut::ShowColor()
 {
-	QColor color = QColorDialog::getColor(static_cast<int>(Qt::blue), this);	//ʹ�ñ�׼��ɫ�Ի���QColorDialog����һ����ɫֵ
+	QColor color = QColorDialog::getColor(static_cast<int>(Qt::blue), this);	//?????????????QColorDialog???????????
 	if (color.isValid())
 	{
 		centerWidget->setColor(color);
@@ -322,7 +322,7 @@ void optimize_3_frame(int k,std::vector<cv::Mat> images,std::vector<cv::Mat> &la
 	int row = temp_label.rows;
 	int col = temp_label.cols;
 	int max_value=0;
-	//用膨胀的方法，将上一张的foreground进行膨胀
+	//�����͵ķ���������һ�ŵ�foreground��������
 	for(int i=0 ; i<row ; i++){
 		for(int j=0 ; j<col ; j++){
 			max_value=0;
@@ -419,7 +419,7 @@ std::vector<cv::Mat> read_video2Mat(std::string video_path)
 	std::vector<cv::Mat> images_temp;
 	std::vector<cv::Mat> images;
 	std::string cmd="ffmpeg -i "+video_path+" -q:v 2  data/source/Video/%d.png";
-	// system(cmd.c_str());
+	system(cmd.c_str());
 
 	std::string path = "data/source/Video/";
 	std::vector<int> index;
@@ -599,12 +599,18 @@ void initial(cv::Mat &label_o,cv::Mat &new_label)
 
 }
 
-
 void VideoCut::doVideoCut() {
-	//Դ��Ƶ���ļ����� this->fileFull��ȡ  ����ͼ�ļ�����this->centerWidget->getSavePath()��ȡ Ŀ���ļ����û�û��ָ�������ͷ��ڰ���֮ǰ�����Ʒ���data��������ĳ��Ŀ¼�����ɣ����Լ���
+	// std::string video_path="./data/news.avi";
+	std::string video_path=std::string(this->fileFull.toLatin1().data());
+	// std::string keyframes_path="./data/source/keyframe/news.avi";
+	std::string keyframes_path=std::string(this->centerWidget->getSavePath().toLatin1().data());
 
-	std::string video_path="./data/news.avi";
-	std::string keyframes_path="./data/source/keyframe/news.avi";
+	doVideoCut_real(video_path,keyframes_path);
+
+}
+
+void VideoCut::doVideoCut_real(std::string video_path,std::string keyframes_path) {
+
 	// read cut of keyframes
 	std::vector<cv::Mat> labels,temp_labels;
 	std::cout<< " key frames path is "<< keyframes_path <<std::endl;
@@ -622,7 +628,7 @@ void VideoCut::doVideoCut() {
 	{
 		labels.push_back( cv::Mat::zeros(images[0].rows,images[0].cols,CV_8UC1));
 	}
-	//对于temp_labels进行改变
+	//����temp_labels���иı�
 	for(int i=0;i<temp_labels.size();i++)
 	{
 		cv::Mat change_labels=cv::Mat::zeros(temp_labels[0].rows,temp_labels[0].cols,CV_8UC1);
@@ -703,7 +709,7 @@ void VideoCut::doVideoCut() {
 	save_label_image(labels[11],"data/testlabel11_after_out.png");
 	save_label_image(labels[10],"data/testlabel10_after_out.png");
 	std::cout << labels[10] << '\n';
-	//keyframe的最后一针不是视频的最后一帧，所以增加这段代码
+	//keyframe������һ�벻����Ƶ������һ֡�������������δ���
 	// int start_index=keyframe_indexs[keyframe_indexs.size()-1],end_index=images.size();
 	// for(int i=0;i<end_index-start_index-1;i++){
 	// 	optimize_3_frame(i+start_index,images,labels);

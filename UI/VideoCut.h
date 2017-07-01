@@ -25,8 +25,8 @@ public:
 	void createActions();                        	//��������
 	void createMenus();                           	//�����˵�
 	void createToolBars();                      	//����������
-	static void doVideoCut();
-	static void doVideoPaste();
+	static void doVideoCut_real(std::string video_path,std::string keyframes_path);
+	// static void doVideoPaste_real();
 
 private:
 	QMenu *fileMenu;                           		//�����˵���
@@ -68,5 +68,7 @@ protected slots:
 	void ShowVideoCutFile();
 	void ShowBgVideoFile();
 	void ShowColor();
+	void doVideoCut();
+	void doVideoPaste();
 
 };
